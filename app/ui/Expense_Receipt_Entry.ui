@@ -165,7 +165,7 @@ QPushButton:disabled {
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="textEdit">
+         <widget class="QTextEdit" name="teExplanation">
           <property name="maximumSize">
            <size>
             <width>700</width>
@@ -191,7 +191,7 @@ QPushButton:disabled {
          </widget>
         </item>
         <item>
-         <widget class="QDateEdit" name="dateEdit">
+         <widget class="QDateEdit" name="deDate">
           <property name="maximumSize">
            <size>
             <width>700</width>
@@ -244,7 +244,7 @@ QPushButton:disabled {
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="cbExpenseType_2">
+         <widget class="QComboBox" name="cbExpenseType">
           <property name="maximumSize">
            <size>
             <width>700</width>

@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QFileDialog,QMessageBox
+from PyQt6.QtWidgets import QWidget,QMessageBox
 from PyQt6.uic import loadUi
 from pathlib import Path
-from app.data.data_base import insert_record
+from app.data.user_repository import save_data
 from app.controller.logic import receipt_entry_logic
 
 
@@ -15,10 +15,13 @@ class Expense_Receipt_Entry(QWidget):
         self.setWindowTitle("Expense_Receipt_Entry")
         self.selected_image_path = None
         self.nav = Navigator()
-        self.logic=receipt_entry_logic()
+        self.logic = receipt_entry_logic()
         self.btnBrowse.clicked.connect(self.browse_image)
         self.btnClear.clicked.connect(self.clear_image)
         self.btnSave.clicked.connect(self.save_record)
+
+
+
 
 
     def browse_image(self):
@@ -28,36 +31,37 @@ class Expense_Receipt_Entry(QWidget):
         if not path:
             return
 
+
+
     def clear_image(self):
         self.selected_image_path = None
         self.lblSelectPicture.setText("No file selected")
 
+
+
     def open_dashboard(self):
         self.dashboard = self.nav.expense_entry_page_navigator(self)
 
-    def save_record(self): #TODO(KF): This function should be written in another layer. this is not pure UI.
-        title = self.leInvoiceNumber.text()
-        description = self.textEdit.toPlainText()
-        amount = self.leExpense.text()
-        record_date = self.dateEdit.date().toString("yyyy-MM-dd")
-        image_path = self.selected_image_path
-        expense_center=self.cbExpenseCenter.currentText()
-        expense_type=self.cbExpenseCenter.currentText()
-        company_name=self.cbCompany.currentText()
-        source_pc = "PC-1"  # later we automate this
-        self.open_dashboard()
-        if not title:
-            return  # add QMessageBox later
-            return  # add QMessageBox later
 
-        insert_record( #TODO(KF): This function should be written in another layer. this is not pure UI.
-            title=title,
-            description=description,
-            amount=amount,
-            record_date=record_date,
-            image_path=image_path,
-            expense_center=expense_center,
-            expense_type=expense_type,
-            company_name=company_name,
-            source_pc=source_pc
-        )
+
+    def save_record(self):
+        data = {
+            "title": self.leInvoiceNumber.text(),
+            "description": self.teExplanation.toPlainText(),
+            "amount": self.leExpense.text(),
+            "record_date": self.deDate.date().toString("yyyy-MM-dd"),
+            "image_path": self.selected_image_path,
+            "expense_center": self.cbExpenseCenter.currentText(),
+            "expense_type": self.cbExpenseType.currentText(),
+            "company_name": self.cbCompany.currentText(),
+            "source_pc": "PC-1"
+        }
+        try:
+            save_data(data)
+            self.open_dashboard()
+
+        except ValueError as e:
+            QMessageBox.warning(self, "Validation Error", str(e))
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
