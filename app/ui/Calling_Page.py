@@ -40,14 +40,14 @@ class Calling_Page(QWidget):
         self.radioButton4.toggled.connect(lambda: self.change_page(0))
 
         # DateEdit 2 (Start)
-        self.dateEdit_2.setMinimumDate(QDate(2000, 1, 1))
-        self.dateEdit_2.setSpecialValueText("Start")
-        self.dateEdit_2.setDisplayFormat("yyyy-MM-dd")
-        self.dateEdit_2.setDate(self.dateEdit_2.minimumDate())
+        self.deLoginEnd.setMinimumDate(QDate(2000, 1, 1))
+        self.deLoginEnd.setSpecialValueText("End")
+        self.deLoginEnd.setDisplayFormat("yyyy-MM-dd")
+        self.deLoginEnd.setDate(self.deLoginEnd.minimumDate())
 
         # DateEdit 3 (End)
         self.deLoginStart.setMinimumDate(QDate(2000, 1, 1))
-        self.deLoginStart.setSpecialValueText("End")
+        self.deLoginStart.setSpecialValueText("Start")
         self.deLoginStart.setDisplayFormat("yyyy-MM-dd")
         self.deLoginStart.setDate(self.deLoginStart.minimumDate())
 
