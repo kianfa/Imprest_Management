@@ -6,366 +6,453 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>404</width>
-    <height>510</height>
+    <width>980</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>500</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16777215</width>
-    <height>16777215</height>
+    <width>980</width>
+    <height>620</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Login</string>
   </property>
+
   <property name="styleSheet">
-   <string notr="true">/* =========================
-   MAIN WINDOW
+   <string notr="true">
+/* =========================
+   BASE
    ========================= */
 QDialog {
-    background-color: #121212;
-    color: white;
-    font-family: Segoe UI;
+    background-color: #0F1115;
+    color: #EAEAEA;
+    font-family: "Segoe UI";
     font-size: 13px;
 }
 
 /* =========================
-   LOGIN CARD (ORANGE BORDER)
+   PANELS
    ========================= */
-QFrame {
-    background-color: transparent;
-    padding: 16px;
+QFrame#leftPanel {
+    background-color: #0F1115;
+}
+
+QFrame#rightPanel {
+    background-color: #141824;
+    border-left: 1px solid rgba(255, 255, 255, 14);
 }
 
 /* =========================
-   TEXT
+   TEXT STYLES
    ========================= */
 QLabel {
-    color: #E0E0E0;
+    color: rgba(255, 255, 255, 210);
+}
+
+QLabel#lblBrand {
+    color: #FFFFFF;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+QLabel#lblTagline {
+    color: rgba(255, 255, 255, 160);
+    font-size: 14px;
 }
 
 QLabel#lblTitle {
-    color: #FF9800;
-    font-size: 24px;
-    font-weight: bold;
+    color: #FFFFFF;
+    font-size: 26px;
+    font-weight: 800;
+}
+
+QLabel#lblSubtitle {
+    color: rgba(255, 255, 255, 150);
+    font-size: 13px;
+}
+
+QLabel#lblHint {
+    color: rgba(255, 255, 255, 140);
+    font-size: 12px;
+}
+
+QLabel#lblFooter {
+    color: rgba(255, 255, 255, 110);
+    font-size: 11px;
 }
 
 /* =========================
-   INPUT FIELDS (BORDER STYLE)
+   INPUTS
    ========================= */
 QLineEdit {
-    background-color: transparent;
-    color: white;
-    border: 1.5px solid #FF9800;
-    border-radius: 8px;
-    padding: 8px;
+    background-color: rgba(255, 255, 255, 6);
+    border: 1px solid rgba(255, 255, 255, 18);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #FFFFFF;
+    min-height: 44px;
+    selection-background-color: rgba(255, 152, 0, 110);
+}
+
+QLineEdit:hover {
+    border: 1px solid rgba(255, 255, 255, 28);
 }
 
 QLineEdit:focus {
-    border: 2px solid #FFA726;
-}
-
-/* =========================
-   LOGIN BUTTON (OUTLINE STYLE)
-   ========================= */
-QPushButton {
-    background-color: transparent;
-    color: #FF9800;
-    font-weight: bold;
     border: 2px solid #FF9800;
-    border-radius: 10px;
-    padding: 10px;
+    background-color: rgba(255, 255, 255, 8);
 }
 
-QPushButton:hover {
-    background-color: rgba(255, 152, 0, 25);
-}
-
-QPushButton:pressed {
-    background-color: rgba(255, 152, 0, 60);
-    color: black;
+QLineEdit::placeholder {
+    color: rgba(255, 255, 255, 110);
 }
 
 /* =========================
-   DISABLED BUTTON
+   PRIMARY BUTTON
    ========================= */
-QPushButton:disabled {
-    border-color: #555;
-    color: #555;
-}
-</string>
-  </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,3,1">
-     <property name="spacing">
-      <number>12</number>
-     </property>
-     <property name="leftMargin">
-      <number>30</number>
-     </property>
-     <property name="topMargin">
-      <number>30</number>
-     </property>
-     <property name="rightMargin">
-      <number>30</number>
-     </property>
-     <property name="bottomMargin">
-      <number>30</number>
-     </property>
-     <item>
-      <widget class="QFrame" name="frameLogin">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>120</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="lblTitle">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>65</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="sizeIncrement">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI Emoji</family>
-            <pointsize>-1</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Welcome Back</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="lbltop">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>60</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Pleasse sign in continue</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QWidget" name="widget" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>1</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>326</width>
-         <height>50</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>326</width>
-         <height>200</height>
-        </size>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="lblUsername">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Username</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="leUsername">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Enter your username</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="lblPassword">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Password</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lePassword">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>35</height>
-           </size>
-          </property>
-          <property name="echoMode">
-           <enum>QLineEdit::Password</enum>
-          </property>
-          <property name="placeholderText">
-           <string>Enter your Password</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnLogin">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>-1</pointsize>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
+QPushButton#btnLogin {
     background-color: #FF9800;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 10px;
-    padding: 10px;
+    color: #101114;
     border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 800;
+    min-height: 46px;
 }
 
-QPushButton:hover {
+QPushButton#btnLogin:hover {
     background-color: #FFA726;
 }
 
-QPushButton:pressed {
+QPushButton#btnLogin:pressed {
     background-color: #F57C00;
 }
-</string>
-       </property>
-       <property name="text">
-        <string>LOGIN</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+
+/* =========================
+   CHECKBOX
+   ========================= */
+QCheckBox {
+    color: rgba(255, 255, 255, 170);
+}
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+}
+
+QCheckBox::indicator:unchecked {
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 26);
+    background-color: rgba(255, 255, 255, 6);
+}
+
+QCheckBox::indicator:checked {
+    border-radius: 6px;
+    border: 1px solid #FF9800;
+    background-color: #FF9800;
+}
+
+/* =========================
+   OPTIONAL: subtle divider line
+   ========================= */
+QFrame#divider {
+    background-color: rgba(255,255,255,10);
+}
+   </string>
+  </property>
+
+  <layout class="QHBoxLayout" name="rootLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+
+   <!-- LEFT PANEL (Hero / Branding) -->
+   <item>
+    <widget class="QFrame" name="leftPanel">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <layout class="QVBoxLayout" name="leftLayout">
+      <property name="leftMargin">
+       <number>56</number>
+      </property>
+      <property name="topMargin">
+       <number>56</number>
+      </property>
+      <property name="rightMargin">
+       <number>56</number>
+      </property>
+      <property name="bottomMargin">
+       <number>56</number>
+      </property>
+      <property name="spacing">
+       <number>18</number>
+      </property>
+
+      <item>
+       <widget class="QLabel" name="lblBrand">
+        <property name="text">
+         <string>YourApp</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblTagline">
+        <property name="text">
+         <string>Secure access to your dashboard and tools.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QFrame" name="divider">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>1</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>1</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblHint">
+        <property name="text">
+         <string>Tip: Use a strong password and keep your account secure.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <spacer name="leftSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>300</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblFooterLeft">
+        <property name="text">
+         <string>© 2026 Your Company</string>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
    </item>
+
+   <!-- RIGHT PANEL (Form) -->
+   <item>
+    <widget class="QFrame" name="rightPanel">
+     <property name="minimumSize">
+      <size>
+       <width>420</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>520</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+
+     <layout class="QVBoxLayout" name="rightLayout">
+      <property name="leftMargin">
+       <number>44</number>
+      </property>
+      <property name="topMargin">
+       <number>56</number>
+      </property>
+      <property name="rightMargin">
+       <number>44</number>
+      </property>
+      <property name="bottomMargin">
+       <number>40</number>
+      </property>
+      <property name="spacing">
+       <number>14</number>
+      </property>
+
+      <item>
+       <widget class="QLabel" name="lblTitle">
+        <property name="text">
+         <string>Sign in</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblSubtitle">
+        <property name="text">
+         <string>Welcome back — please enter your details.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <spacer name="spFormTop">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblUsername">
+        <property name="text">
+         <string>Username</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLineEdit" name="leUsername">
+        <property name="placeholderText">
+         <string>Enter your username</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblPassword">
+        <property name="text">
+         <string>Password</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLineEdit" name="lePassword">
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+        <property name="placeholderText">
+         <string>Enter your password</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QCheckBox" name="cbRemember">
+        <property name="text">
+         <string>Keep me signed in</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <spacer name="spBeforeButton">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>6</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
+      <item>
+       <widget class="QPushButton" name="btnLogin">
+        <property name="text">
+         <string>Sign in</string>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <spacer name="spPushBottom">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>220</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="lblFooter">
+        <property name="text">
+         <string>By continuing, you agree to our Terms &amp; Privacy Policy.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
   </layout>
  </widget>
  <resources/>
