@@ -28,7 +28,6 @@
   <property name="windowTitle">
    <string>Receipt Entry</string>
   </property>
-
   <property name="styleSheet">
    <string notr="true">
 /* =========================
@@ -37,16 +36,18 @@
 QWidget {
     background-color: #121212;
     color: #EAEAEA;
-    font-family: "Segoe UI";
+    font-family: &quot;Segoe UI&quot;;
     font-size: 13px;
 }
-
 /* =========================
    HEADER
    ========================= */
 QFrame#headerBar {
-    background-color: #151515;
+    background-color: #171717;
     border-bottom: 1px solid rgba(255,255,255,10);
+}
+QLabel {
+    background-color: #171717;
 }
 
 QLabel#lblTitle {
@@ -130,7 +131,6 @@ QLabel#lblSelectPicture {
     color: rgba(255,255,255,170);
     background-color: rgba(255,255,255,4);
 }
-
 /* =========================
    BUTTONS
    ========================= */
@@ -185,7 +185,6 @@ QPushButton:disabled {
 }
    </string>
   </property>
-
   <layout class="QVBoxLayout" name="rootLayout">
    <property name="spacing">
     <number>16</number>
@@ -202,8 +201,6 @@ QPushButton:disabled {
    <property name="bottomMargin">
     <number>18</number>
    </property>
-
-   <!-- HEADER -->
    <item>
     <widget class="QFrame" name="headerBar">
      <property name="minimumSize">
@@ -216,6 +213,9 @@ QPushButton:disabled {
       <enum>QFrame::NoFrame</enum>
      </property>
      <layout class="QVBoxLayout" name="headerLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
       <property name="leftMargin">
        <number>18</number>
       </property>
@@ -228,9 +228,6 @@ QPushButton:disabled {
       <property name="bottomMargin">
        <number>14</number>
       </property>
-      <property name="spacing">
-       <number>6</number>
-      </property>
       <item>
        <widget class="QLabel" name="lblTitle">
         <property name="text">
@@ -240,6 +237,12 @@ QPushButton:disabled {
       </item>
       <item>
        <widget class="QLabel" name="lblSubtitle">
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+    background-color: #171717;   /* orange */
+}
+</string>
+        </property>
         <property name="text">
          <string>Fill in the receipt details and attach the invoice image (optional).</string>
         </property>
@@ -251,14 +254,21 @@ QPushButton:disabled {
      </layout>
     </widget>
    </item>
-
-   <!-- CONTENT CARD -->
    <item>
     <widget class="QFrame" name="contentCard">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
      <layout class="QVBoxLayout" name="cardLayout">
+      <property name="spacing">
+       <number>14</number>
+      </property>
       <property name="leftMargin">
        <number>18</number>
       </property>
@@ -271,11 +281,6 @@ QPushButton:disabled {
       <property name="bottomMargin">
        <number>18</number>
       </property>
-      <property name="spacing">
-       <number>14</number>
-      </property>
-
-      <!-- FORM GRID -->
       <item>
        <layout class="QGridLayout" name="formGrid">
         <property name="horizontalSpacing">
@@ -284,39 +289,45 @@ QPushButton:disabled {
         <property name="verticalSpacing">
          <number>10</number>
         </property>
-
-        <!-- Invoice No -->
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblInvoice">
-          <property name="text">
-           <string>Invoice Number</string>
+        <item row="2" column="0">
+         <widget class="QLineEdit" name="leExpense">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
           </property>
-          <property name="property" stdset="0">
-           <string>class</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLineEdit" name="leInvoiceNumber">
           <property name="placeholderText">
-           <string>e.g. INV-10293</string>
+           <string>Amount</string>
           </property>
          </widget>
         </item>
-
-        <!-- Date -->
-        <item row="0" column="1">
-         <widget class="QLabel" name="lblDate">
-          <property name="text">
-           <string>Date</string>
+        <item row="0" column="0">
+         <widget class="QLineEdit" name="leInvoiceNumber">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
           </property>
-          <property name="property" stdset="0">
-           <string>class</string>
+          <property name="placeholderText">
+           <string>Invoice No</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="3" column="0">
          <widget class="QDateEdit" name="deDate">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QDateEdit#deDate::drop-down { border-color: #FF9800; }
+QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
+</string>
+          </property>
           <property name="displayFormat">
            <string>yyyy/MM/dd</string>
           </property>
@@ -325,39 +336,17 @@ QPushButton:disabled {
           </property>
          </widget>
         </item>
-
-        <!-- Expense -->
-        <item row="2" column="0">
-         <widget class="QLabel" name="lblExpense">
-          <property name="text">
-           <string>Expense Amount</string>
-          </property>
-          <property name="property" stdset="0">
-           <string>class</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLineEdit" name="leExpense">
-          <property name="placeholderText">
-           <string>e.g. 125.00</string>
-          </property>
-         </widget>
-        </item>
-
-        <!-- Company -->
         <item row="2" column="1">
-         <widget class="QLabel" name="lblCompany">
-          <property name="text">
+         <widget class="QComboBox" name="cbCompany">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="placeholderText">
            <string>Company</string>
           </property>
-          <property name="property" stdset="0">
-           <string>class</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="cbCompany">
           <item>
            <property name="text">
             <string>S</string>
@@ -370,23 +359,20 @@ QPushButton:disabled {
           </item>
          </widget>
         </item>
-
-        <!-- Expense Center -->
-        <item row="4" column="0">
-         <widget class="QLabel" name="lblExpenseCenter">
-          <property name="text">
+        <item row="0" column="1">
+         <widget class="QComboBox" name="cbExpenseCenter">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maxVisibleItems">
+           <number>6</number>
+          </property>
+          <property name="placeholderText">
            <string>Expense Center</string>
           </property>
-          <property name="property" stdset="0">
-           <string>class</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QComboBox" name="cbExpenseCenter">
-          <property name="maxVisibleItems">
-           <number>6</number>
-          </property>
           <item>
            <property name="text">
             <string>A</string>
@@ -402,52 +388,6 @@ QPushButton:disabled {
             <string>C</string>
            </property>
           </item>
-         </widget>
-        </item>
-
-        <!-- Expense Type -->
-        <item row="4" column="1">
-         <widget class="QLabel" name="lblExpenseType">
-          <property name="text">
-           <string>Expense Type</string>
-          </property>
-          <property name="property" stdset="0">
-           <string>class</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QComboBox" name="cbExpenseType">
-          <property name="maxVisibleItems">
-           <number>6</number>
-          </property>
-          <item>
-           <property name="text">
-            <string>A</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>B</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>C</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-
-        <!-- Explanation full width -->
-        <item row="6" column="0" colspan="2">
-         <widget class="QLabel" name="lblExplanation">
-          <property name="text">
-           <string>Explanation</string>
-          </property>
-          <property name="property" stdset="0">
-           <string>class</string>
-          </property>
          </widget>
         </item>
         <item row="7" column="0" colspan="2">
@@ -455,7 +395,7 @@ QPushButton:disabled {
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>110</height>
+            <height>50</height>
            </size>
           </property>
           <property name="placeholderText">
@@ -463,10 +403,39 @@ QPushButton:disabled {
           </property>
          </widget>
         </item>
-
+        <item row="3" column="1">
+         <widget class="QComboBox" name="cbExpenseType">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maxVisibleItems">
+           <number>6</number>
+          </property>
+          <property name="placeholderText">
+           <string>Expense Type</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>B</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>C</string>
+           </property>
+          </item>
+         </widget>
+        </item>
        </layout>
       </item>
-
       <item>
        <widget class="QFrame" name="divider">
         <property name="minimumSize">
@@ -486,20 +455,17 @@ QPushButton:disabled {
         </property>
        </widget>
       </item>
-
-      <!-- ATTACHMENT ROW -->
       <item>
        <layout class="QHBoxLayout" name="attachRow">
         <property name="spacing">
          <number>14</number>
         </property>
-
         <item>
          <widget class="QLabel" name="lblSelectPicture">
           <property name="minimumSize">
            <size>
             <width>340</width>
-            <height>220</height>
+            <height>170</height>
            </size>
           </property>
           <property name="text">
@@ -513,7 +479,6 @@ QPushButton:disabled {
           </property>
          </widget>
         </item>
-
         <item>
          <layout class="QVBoxLayout" name="attachBtns">
           <property name="spacing">
@@ -524,7 +489,7 @@ QPushButton:disabled {
             <property name="minimumSize">
              <size>
               <width>160</width>
-              <height>46</height>
+              <height>64</height>
              </size>
             </property>
             <property name="cursor">
@@ -540,7 +505,7 @@ QPushButton:disabled {
             <property name="minimumSize">
              <size>
               <width>160</width>
-              <height>46</height>
+              <height>64</height>
              </size>
             </property>
             <property name="cursor">
@@ -566,15 +531,11 @@ QPushButton:disabled {
           </item>
          </layout>
         </item>
-
        </layout>
       </item>
-
      </layout>
     </widget>
    </item>
-
-   <!-- FOOTER BUTTONS -->
    <item>
     <layout class="QHBoxLayout" name="footerRow">
      <property name="spacing">
@@ -594,27 +555,11 @@ QPushButton:disabled {
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btnCancel">
-       <property name="minimumSize">
-        <size>
-         <width>140</width>
-         <height>46</height>
-        </size>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="btnSave">
        <property name="minimumSize">
         <size>
          <width>180</width>
-         <height>46</height>
+         <height>60</height>
         </size>
        </property>
        <property name="cursor">
@@ -627,11 +572,8 @@ QPushButton:disabled {
      </item>
     </layout>
    </item>
-
   </layout>
-
-  <!-- Add "class" to labels for consistent style (Qt Designer dynamic property) -->
-  <connections/>
-  <resources/>
  </widget>
+ <resources/>
+ <connections/>
 </ui>

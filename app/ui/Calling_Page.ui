@@ -19,107 +19,203 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+
   <property name="styleSheet">
-   <string notr="true">/* =========================
-   MAIN WINDOW
-   ========================= */
+   <string notr="true">
+/* ===== Base ===== */
 QWidget {
     background-color: #191919;
-    color: white;
-    font-family: Segoe UI;
+    color: #EAEAEA;
+    font-family: "Segoe UI";
     font-size: 13px;
 }
 
-/* =========================
-   LOGIN CARD (ORANGE BORDER)
-   ========================= */
-QFrame {
-    background-color: transparent;
-    padding: 16px;
-}
-
-/* =========================
-   TEXT
-   ========================= */
 QLabel {
-    color: #E0E0E0;
+    color: #EAEAEA;
 }
 
-QLabel#lblTitle {
-    color: #FF9800;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-/* =========================
-   INPUT FIELDS (BORDER STYLE)
-   ========================= */
-QLineEdit {
-    background-color: transparent;
-    color: white;
-    border: 1.5px solid #FF9800;
-    border-radius: 8px;
-    padding: 4px;
-}
-
+/* ===== GroupBox (card) ===== */
 QGroupBox {
-    background-color: transparent;
-    color: white;
-    border: 1.5px solid #FF9800;
-    border-radius: 8px;
+    background-color: #161616;
+    border: 1px solid #2A2A2A;
+    border-radius: 10px;
+    margin-top: 14px;
     padding: 12px;
 }
 
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 6px;
+    color: #EAEAEA;
+    font-weight: bold;
+}
+
+/* ===== Inputs ===== */
+QLineEdit, QComboBox, QDateEdit {
+    background-color: #1C1C1C;
+    color: #FFFFFF;
+    border: 1px solid #3A3A3A;
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-height: 34px;
+}
+
+QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
+    border: 2px solid #FF9800;
+}
+
+/* ===== ComboBox dropdown button ===== */
 QComboBox {
-    background-color: transparent;
-    color: white;
-    border: 1.5px solid #FF9800;
-    border-radius: 8px;
-    padding: 4px;
+    padding-right: 30px;
 }
 
+QComboBox::drop-down {
+    width: 26px;
+    border-left: 1px solid #3A3A3A;
+    background-color: #1C1C1C;
+}
+
+QComboBox::drop-down:hover {
+    background-color: #232323;
+}
+
+/* ===== DateEdit calendar button ===== */
 QDateEdit {
+    padding-right: 30px;
+}
+
+QDateEdit::drop-down {
+    width: 26px;
+    border-left: 1px solid #3A3A3A;
+    background-color: #FF9800;   /* calendar button color */
+}
+
+QDateEdit::drop-down:hover {
+    background-color: #FFA726;
+}
+
+QDateEdit::drop-down:pressed {
+    background-color: #F57C00;
+}
+
+/* ===== Calendar popup ===== */
+QCalendarWidget {
+    background-color: #151515;
+    color: #EAEAEA;
+    border: 1px solid #FF9800;
+}
+
+QCalendarWidget QToolButton {
+    color: #FFFFFF;
     background-color: transparent;
-    color: white;
-    border: 1.5px solid #FF9800;
+    border: none;
+    padding: 6px;
+}
+
+QCalendarWidget QToolButton:hover {
+    background-color: #232323;
+}
+
+QCalendarWidget QAbstractItemView {
+    background-color: #141414;
+    color: #EAEAEA;
+    selection-background-color: #FF9800;
+    selection-color: #111111;
+}
+
+/* ===== RadioButton ===== */
+QRadioButton {
+    color: #EAEAEA;
+    padding: 6px 4px;
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QRadioButton::indicator:unchecked {
+    border: 2px solid #3A3A3A;
+    background-color: #1C1C1C;
     border-radius: 8px;
-    padding: 4px;
 }
 
-QLineEdit:focus {
-    border: 2px solid #FFA726;
+QRadioButton::indicator:checked {
+    border: 2px solid #FF9800;
+    background-color: #FF9800;
+    border-radius: 8px;
 }
 
-/* =========================
-   LOGIN BUTTON (OUTLINE STYLE)
-   ========================= */
+/* ===== Buttons ===== */
 QPushButton {
     background-color: transparent;
     color: #FF9800;
     font-weight: bold;
     border: 2px solid #FF9800;
     border-radius: 10px;
-    padding: 10px;
+    padding: 10px 14px;
+    min-height: 40px;
 }
 
 QPushButton:hover {
-    background-color: rgba(255, 152, 0, 25);
+    background-color: #232323;
 }
 
 QPushButton:pressed {
-    background-color: rgba(255, 152, 0, 60);
-    color: black;
+    background-color: #2B2B2B;
 }
 
-/* =========================
-   DISABLED BUTTON
-   ========================= */
-QPushButton:disabled {
-    border-color: #555;
-    color: #555;
+/* Primary (Search) */
+QPushButton#btnSearch {
+    background-color: #FF9800;
+    color: #111111;
+    border: none;
 }
-</string>
+
+QPushButton#btnSearch:hover { background-color: #FFA726; }
+QPushButton#btnSearch:pressed { background-color: #F57C00; }
+
+/* Secondary */
+QPushButton#btnSaveasexcel {
+    color: #EAEAEA;
+    border: 1px solid #3A3A3A;
+}
+
+QPushButton#btnSaveasexcel:hover {
+    background-color: #232323;
+}
+
+/* Disabled */
+QPushButton:disabled {
+    color: #777777;
+    border-color: #444444;
+}
+
+/* ===== Table ===== */
+QTableView {
+    background-color: #111827;
+    alternate-background-color: #0B1220;
+    color: #E5E7EB;
+    gridline-color: #1F2937;
+    border: 1px solid #1F2937;
+    border-radius: 8px;
+    selection-background-color: #FF9800;
+    selection-color: #111111;
+}
+
+QHeaderView::section {
+    background-color: #0F172A;
+    color: #E5E7EB;
+    padding: 8px 10px;
+    border: none;
+    border-right: 1px solid #1F2937;
+    font-weight: bold;
+}
+   </string>
   </property>
+
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -166,6 +262,7 @@ QPushButton:disabled {
        </layout>
       </widget>
      </item>
+
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="maximumSize">
@@ -177,6 +274,7 @@ QPushButton:disabled {
        <property name="currentIndex">
         <number>1</number>
        </property>
+
        <widget class="QWidget" name="pgInvoiceNo">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -192,6 +290,7 @@ QPushButton:disabled {
          </item>
         </layout>
        </widget>
+
        <widget class="QWidget" name="pgRegstrationDate">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
@@ -203,6 +302,7 @@ QPushButton:disabled {
          </item>
         </layout>
        </widget>
+
        <widget class="QWidget" name="pgExplanation">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
@@ -225,6 +325,7 @@ QPushButton:disabled {
          </item>
         </layout>
        </widget>
+
        <widget class="QWidget" name="pgLoginDate">
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
@@ -242,8 +343,10 @@ QPushButton:disabled {
          </item>
         </layout>
        </widget>
+
       </widget>
      </item>
+
      <item>
       <widget class="QPushButton" name="btnSearch">
        <property name="text">
@@ -251,6 +354,7 @@ QPushButton:disabled {
        </property>
       </widget>
      </item>
+
      <item>
       <widget class="QTableView" name="tableView">
        <property name="sizePolicy">
@@ -265,49 +369,12 @@ QPushButton:disabled {
          <height>16777215</height>
         </size>
        </property>
+
+       <!-- IMPORTANT: cleared broken local stylesheet to prevent Designer errors -->
        <property name="styleSheet">
-        <string notr="true">QWidget {
-                font-size: 11pt;
-            }
-
-            QTableView {
-                background: #111827;             /* slate-900 */
-                alternate-background-color: #0B1220;
-                color: #E5E7EB;                  /* gray-200 */
-                gridline-color: #1F2937;         /* gray-800 */
-                border: 1px solid #1F2937;
-                border-radius: 8px;
-                selection-background-color: #1D4ED8; /* blue-700 */
-                selection-color: #FFFFFF;
-            }
-
-            QHeaderView::section {
-                background-color: #0F172A;       /* slate-950 */
-                color: #E5E7EB;
-                padding: 8px 10px;
-                border: none;
-                border-right: 1px solid #1F2937;
-                font-weight: 600;
-            }
-
-            QTableView::item {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-
-            QTableView::item:selected {
-                background: #1D4ED8;
-                color: #FFFFFF;
-            }
-        &quot;&quot;&quot;
-QHeaderView::section {
-    background-color: #2c3e50;
-    color: white;
-    padding: 4px;
-    border: none;
-}
-</string>
+        <string notr="true"/>
        </property>
+
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -331,6 +398,7 @@ QHeaderView::section {
        </property>
       </widget>
      </item>
+
      <item>
       <widget class="QPushButton" name="btnSaveasexcel">
        <property name="text">
@@ -338,12 +406,15 @@ QHeaderView::section {
        </property>
       </widget>
      </item>
+
     </layout>
    </item>
+
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5"/>
    </item>
   </layout>
+
  </widget>
  <resources/>
  <connections/>
