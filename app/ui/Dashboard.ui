@@ -19,8 +19,6 @@
   <property name="windowTitle">
    <string>Dashboard</string>
   </property>
-
-  <!-- PROFESSIONAL DARK + ORANGE THEME -->
   <property name="styleSheet">
    <string notr="true">
 /* =========================
@@ -29,7 +27,7 @@
 QMainWindow, QWidget {
     background-color: #121212;
     color: #EAEAEA;
-    font-family: "Segoe UI";
+    font-family: &quot;Segoe UI&quot;;
     font-size: 13px;
 }
 
@@ -37,9 +35,13 @@ QMainWindow, QWidget {
    HEADER BAR
    ========================= */
 QFrame#headerBar {
-    background-color: #151515;
+    background-color: #171717;
     border-bottom: 1px solid rgba(255,255,255,10);
 }
+QLabel {
+background-color: #171717; 
+}
+
 
 /* Titles */
 QLabel#lblTitle {
@@ -105,10 +107,8 @@ QPushButton.actionTile:pressed {
     border: 1px solid rgba(255,152,0,90);
 }
 
-/* Optional: make the "primary" tile slightly more orange */
-QPushButton#btndashboard_input {
-    border: 1px solid rgba(255,152,0,45);
-}
+/* Optional: make the &quot;primary&quot; tile slightly more orange */
+
 
 /* =========================
    STANDARD BUTTONS (if you add more later)
@@ -153,7 +153,6 @@ QToolBar {
 }
    </string>
   </property>
-
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="rootLayout">
     <property name="spacing">
@@ -171,8 +170,6 @@ QToolBar {
     <property name="bottomMargin">
      <number>22</number>
     </property>
-
-    <!-- HEADER BAR -->
     <item>
      <widget class="QFrame" name="headerBar">
       <property name="minimumSize">
@@ -185,6 +182,9 @@ QToolBar {
        <enum>QFrame::NoFrame</enum>
       </property>
       <layout class="QVBoxLayout" name="headerLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
        <property name="leftMargin">
         <number>18</number>
        </property>
@@ -196,9 +196,6 @@ QToolBar {
        </property>
        <property name="bottomMargin">
         <number>14</number>
-       </property>
-       <property name="spacing">
-        <number>6</number>
        </property>
        <item>
         <widget class="QLabel" name="lblTitle">
@@ -217,14 +214,15 @@ QToolBar {
       </layout>
      </widget>
     </item>
-
-    <!-- MAIN CONTENT CARD -->
     <item>
      <widget class="QFrame" name="contentCard">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
       <layout class="QVBoxLayout" name="contentLayout">
+       <property name="spacing">
+        <number>14</number>
+       </property>
        <property name="leftMargin">
         <number>22</number>
        </property>
@@ -237,10 +235,6 @@ QToolBar {
        <property name="bottomMargin">
         <number>22</number>
        </property>
-       <property name="spacing">
-        <number>14</number>
-       </property>
-
        <item>
         <widget class="QLabel" name="lblSection">
          <property name="text">
@@ -248,7 +242,6 @@ QToolBar {
          </property>
         </widget>
        </item>
-
        <item>
         <widget class="QLabel" name="lblHint">
          <property name="text">
@@ -259,7 +252,6 @@ QToolBar {
          </property>
         </widget>
        </item>
-
        <item>
         <widget class="QFrame" name="divider">
          <property name="minimumSize">
@@ -279,14 +271,11 @@ QToolBar {
          </property>
         </widget>
        </item>
-
-       <!-- TILES ROW -->
        <item>
         <layout class="QHBoxLayout" name="tilesRow">
          <property name="spacing">
           <number>14</number>
          </property>
-
          <item>
           <widget class="QPushButton" name="btndashboard_input">
            <property name="minimumSize">
@@ -308,7 +297,6 @@ Enter new records and update details</string>
            </property>
           </widget>
          </item>
-
          <item>
           <widget class="QPushButton" name="btndashboard_save">
            <property name="minimumSize">
@@ -330,11 +318,8 @@ Store your work securely and export</string>
            </property>
           </widget>
          </item>
-
         </layout>
        </item>
-
-       <!-- push content up a bit for cleaner spacing -->
        <item>
         <spacer name="spBottom">
          <property name="orientation">
@@ -348,14 +333,11 @@ Store your work securely and export</string>
          </property>
         </spacer>
        </item>
-
       </layout>
      </widget>
     </item>
-
    </layout>
   </widget>
-
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -378,14 +360,7 @@ Store your work securely and export</string>
     <bool>false</bool>
    </attribute>
   </widget>
-
  </widget>
-
  <resources/>
  <connections/>
-
- <!-- NOTE:
-      Qt Designer needs a dynamic property named "class" with value "actionTile"
-      on both btndashboard_input and btndashboard_save for the tile styling to apply.
- -->
 </ui>
