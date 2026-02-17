@@ -4,6 +4,7 @@ from typing import Optional
 from PyQt6.QtWidgets import QFileDialog, QWidget
 from dataclasses import dataclass
 from PyQt6.QtGui import QStandardItem, QStandardItemModel
+from app.data.data_base import Load_Save_Data
 
 
 class receipt_entry_logic:
@@ -55,19 +56,20 @@ class calling_page_logic:
     def load_invoices(self):
         # Your repo functions return (headers, rows), so we ignore headers
         if self.radioButton1.isChecked():
-            rows = self.repo.get_invoices_by_title(self.leInvoiceNo.text().strip())
+            rows = Load_Save_Data.get_invoices_by_title(self.leInvoiceNo.text().strip())
 
 
         elif self.radioButton2.isChecked():
-            date_str = self.deRegstrationDate.date().toString("yyyy-MM-dd")
-            rows = self.repo.get_invoices_by_registration_date(date_str)
+            date_str_start = self.deLoginStart.date().toString("yyyy-MM-dd")
+            date_str_end = self.deLoginEnd.date().toString("yyyy-MM-dd")
+            rows = Load_Save_Data.get_invoices_by_logindate(date_str_start, date_str_end)
 
         elif self.radioButton3.isChecked():
-            date_str = self.deLoginStart.date().toString("yyyy-MM-dd")
-            rows = self.repo.get_invoices_by_login_date(date_str)
+            date_str = self.deRegstrationDate.date().toString("yyyy-MM-dd")
+            rows = Load_Save_Data.get_invoices_by_regestrationdate(date_str)
 
         else:  # radioButton4
-            rows = self.repo.get_invoices_by_explanation(self.leExplanation.text().strip())
+            rows = Load_Save_Data.get_invoices_by_explanation(self.leExplanation.text().strip())
 
         # Clear + keep the static first row
         self.model.clear()

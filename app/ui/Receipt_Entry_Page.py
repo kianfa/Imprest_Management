@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget,QMessageBox
 from PyQt6.uic import loadUi
 from pathlib import Path
-from app.data.user_repository import save_data
+from app.data.data_base import Load_Save_Data
 from app.controller.logic import receipt_entry_logic
 
 
@@ -57,7 +57,7 @@ class Expense_Receipt_Entry(QWidget):
             "source_pc": "PC-1"
         }
         try:
-            save_data(data)
+            Load_Save_Data.save_data(data)
             self.open_dashboard()
 
         except ValueError as e:
