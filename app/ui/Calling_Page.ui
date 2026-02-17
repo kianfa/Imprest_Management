@@ -19,14 +19,13 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-
   <property name="styleSheet">
    <string notr="true">
 /* ===== Base ===== */
 QWidget {
     background-color: #191919;
     color: #EAEAEA;
-    font-family: "Segoe UI";
+    font-family: &quot;Segoe UI&quot;;
     font-size: 13px;
 }
 
@@ -215,7 +214,6 @@ QHeaderView::section {
 }
    </string>
   </property>
-
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -262,7 +260,6 @@ QHeaderView::section {
        </layout>
       </widget>
      </item>
-
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="maximumSize">
@@ -274,7 +271,6 @@ QHeaderView::section {
        <property name="currentIndex">
         <number>1</number>
        </property>
-
        <widget class="QWidget" name="pgInvoiceNo">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -290,11 +286,13 @@ QHeaderView::section {
          </item>
         </layout>
        </widget>
-
        <widget class="QWidget" name="pgRegstrationDate">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QDateEdit" name="deRegstrationDate">
+           <property name="displayFormat">
+            <string>yyyy/mm/dd</string>
+           </property>
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
@@ -302,7 +300,6 @@ QHeaderView::section {
          </item>
         </layout>
        </widget>
-
        <widget class="QWidget" name="pgExplanation">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
@@ -325,7 +322,6 @@ QHeaderView::section {
          </item>
         </layout>
        </widget>
-
        <widget class="QWidget" name="pgLoginDate">
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
@@ -343,10 +339,8 @@ QHeaderView::section {
          </item>
         </layout>
        </widget>
-
       </widget>
      </item>
-
      <item>
       <widget class="QPushButton" name="btnSearch">
        <property name="text">
@@ -354,7 +348,6 @@ QHeaderView::section {
        </property>
       </widget>
      </item>
-
      <item>
       <widget class="QTableView" name="tableView">
        <property name="sizePolicy">
@@ -369,12 +362,9 @@ QHeaderView::section {
          <height>16777215</height>
         </size>
        </property>
-
-       <!-- IMPORTANT: cleared broken local stylesheet to prevent Designer errors -->
        <property name="styleSheet">
         <string notr="true"/>
        </property>
-
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -398,7 +388,6 @@ QHeaderView::section {
        </property>
       </widget>
      </item>
-
      <item>
       <widget class="QPushButton" name="btnSaveasexcel">
        <property name="text">
@@ -406,15 +395,12 @@ QHeaderView::section {
        </property>
       </widget>
      </item>
-
     </layout>
    </item>
-
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5"/>
    </item>
   </layout>
-
  </widget>
  <resources/>
  <connections/>

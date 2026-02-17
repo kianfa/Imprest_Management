@@ -1,25 +1,29 @@
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget,QTableView
 from PyQt6.QtCore import QDate
 from PyQt6.uic import loadUi
 from pathlib import Path
-from app.data.user_repository import load_data
 from app.controller.logic import calling_page_logic
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from app.data.data_base import Load_Save_Data
+
 
 class Calling_Page(QWidget):
     def __init__(self):
         super().__init__()
+
+        # Load UI made in Qt Designer
         ui_path = Path(__file__).parent / "Calling_Page.ui"
-        loadUi(ui_path, self)
+        self.UI = loadUi(ui_path, self)
+
         self.headers = ["title", "explanation", "record_date", "amount",
                         "expense_center", "expense_type", "company_name"]
-
         self.model = QStandardItemModel(self)
         self.model.setColumnCount(len(self.headers))
         self.model.setHorizontalHeaderLabels([""] * len(self.headers))  # keep header blank
-
         self.model.appendRow([QStandardItem(h) for h in self.headers])  # static first row
-        self.tableView.setModel(self.model)
+
+        #ASK: vaghti ino mizarim inja kar nemikoneh? "self.tableView=QTableView(self)"
+        self.UI.tableView.setModel(self.model)
         self.tableView.horizontalHeader().setVisible(False)
         self.tableView.verticalHeader().setVisible(False)  # removes row numbers + corner block
         self.tableView.setCornerButtonEnabled(False)  # extra safety
@@ -28,7 +32,7 @@ class Calling_Page(QWidget):
 
         self.logic = calling_page_logic()
 
-        self.logic.repo = load_data()
+        self.logic.repo = Load_Save_Data()
         self.logic.model = self.model
         self.logic.headers = self.headers
 
@@ -51,6 +55,8 @@ class Calling_Page(QWidget):
         self.deLoginStart.setDisplayFormat("yyyy-MM-dd")
         self.deLoginStart.setDate(self.deLoginStart.minimumDate())
 
+        self.deRegstrationDate.setDisplayFormat("yyyy-MM-dd")
+
         #loading data
         self.logic.tableView = self.tableView
 
@@ -63,6 +69,8 @@ class Calling_Page(QWidget):
         self.logic.leExplanation = self.leExplanation
         self.logic.deRegstrationDate = self.deRegstrationDate
         self.logic.deLoginStart = self.deLoginStart
+        self.logic.deLoginEnd = self.deLoginEnd
+
 
         self.btnSearch.clicked.connect(self.logic.load_invoices)
 
