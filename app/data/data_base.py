@@ -24,18 +24,18 @@ class Load_Save_Data:
         return rows
 
     @classmethod
-    def get_invoices_by_title(self, title):
+    def get_invoices_by_Invoice_NO(self, Invoice_NO):
         query="""
-            SELECT title, explanation, record_date, amount, expense_center,expense_type,company_name
+            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
             FROM records
-            WHERE title LIKE ?
+            WHERE Invoice_NO LIKE ?
         """
-        return self.fetch_all(query,(title,))
+        return self.fetch_all(query,(Invoice_NO,))
 
     @classmethod
     def get_invoices_by_explanation(self,explanation):
         query="""
-            SELECT title, explanation, record_date, amount, expense_center,expense_type,company_name
+            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
             FROM records
             WHERE explanation LIKE ?
         """
@@ -44,16 +44,16 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_regestrationdate(self, regestrationdate):
         query="""
-            SELECT title, explanation, record_date, amount, expense_center, expense_type, company_name
+            SELECT Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name
             FROM records
             WHERE record_date = ?
         """
         return self.fetch_all(query,(regestrationdate,))
 
     @classmethod
-    def get_invoices_by_logindate(self, startdate,enddate):
+    def get_invoices_by_time_range(self, startdate,enddate):
         query="""
-        SELECT title, explanation, record_date, amount, expense_center,expense_type,company_name
+        SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
         FROM records
         WHERE record_date >= ? AND record_date <= ?
         """
@@ -67,7 +67,7 @@ class Load_Save_Data:
     @staticmethod
     def save_data(self,data: dict):
         DataBase.insert_record(
-            title=data["title"],
+            Invoice_NO=data["Invoice NO"],
             explanation=data["explanation"],
             amount=float(data["amount"]),
             record_date=data["record_date"],
@@ -97,7 +97,7 @@ class DataBase:
                             TEXT
                             PRIMARY
                             KEY,
-                            title
+                            Invoice_NO
                             TEXT
                             NOT
                             NULL,
@@ -128,21 +128,21 @@ class DataBase:
         conn.commit()
         conn.close()
 
-    def insert_record(self,title, explanation, amount, record_date, image_path, source_pc, expense_center, expense_type,company_name):
+    def insert_record(self,Invoice_NO, explanation, amount, record_date, image_path, source_pc, expense_center, expense_type,company_name):
         conn = self.get_connection()
         cur = conn.cursor()
         record_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         cur.execute("""
         INSERT INTO records (
-            id, title, explanation, amount,
+            id, Invoice_NO, explanation, amount,
             record_date, image_path,
             last_modified, source_pc, expense_center, expense_type, company_name
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ? )
         """, (
             record_id,
-            title,
+            Invoice_NO,
             explanation,
             amount,
             record_date,

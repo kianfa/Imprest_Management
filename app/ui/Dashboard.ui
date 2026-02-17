@@ -288,9 +288,9 @@ QToolBar {
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
            <property name="text">
-            <string>Input
+            <string>SAVE
 ────────
-Enter new records and update details</string>
+Saving records</string>
            </property>
            <property name="property" stdset="0">
             <string>class</string>
@@ -309,9 +309,9 @@ Enter new records and update details</string>
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
            <property name="text">
-            <string>Save
+            <string>LOAD
 ────────
-Store your work securely and export</string>
+Loading records</string>
            </property>
            <property name="property" stdset="0">
             <string>class</string>

@@ -3,7 +3,7 @@ from data.data_base import create_tables, insert_record, get_all_records
 create_tables()
 
 insert_record(
-    title="Test from Python",
+    Invoice_NO="Test from Python",
     explanation="This was inserted using sqlite3",
     amount=123.45,
     record_date="2026-01-01",

@@ -15,7 +15,7 @@ class Calling_Page(QWidget):
         ui_path = Path(__file__).parent / "Calling_Page.ui"
         self.UI = loadUi(ui_path, self)
 
-        self.headers = ["title", "explanation", "record_date", "amount",
+        self.headers = ["Invoice NO", "explanation", "record_date", "amount",
                         "expense_center", "expense_type", "company_name"]
         self.model = QStandardItemModel(self)
         self.model.setColumnCount(len(self.headers))
@@ -37,11 +37,11 @@ class Calling_Page(QWidget):
         self.logic.headers = self.headers
 
         # Radio buttons
-        self.radioButton1.setChecked(True)
-        self.radioButton1.toggled.connect(lambda: self.change_page(3))
-        self.radioButton2.toggled.connect(lambda: self.change_page(2))
-        self.radioButton3.toggled.connect(lambda: self.change_page(1))
-        self.radioButton4.toggled.connect(lambda: self.change_page(0))
+        self.rbInvoiceNo.setChecked(True)
+        self.rbInvoiceNo.toggled.connect(lambda: self.change_page(3))
+        self.rbTimeRange.toggled.connect(lambda: self.change_page(2))
+        self.rbRegistrationDate.toggled.connect(lambda: self.change_page(1))
+        self.rbExplanation.toggled.connect(lambda: self.change_page(0))
 
         # DateEdit 2 (Start)
         self.deLoginEnd.setMinimumDate(QDate(2000, 1, 1))
@@ -60,10 +60,10 @@ class Calling_Page(QWidget):
         #loading data
         self.logic.tableView = self.tableView
 
-        self.logic.radioButton1 = self.radioButton1
-        self.logic.radioButton2 = self.radioButton2
-        self.logic.radioButton3 = self.radioButton3
-        self.logic.radioButton4 = self.radioButton4
+        self.logic.rbInvoiceNo = self.rbInvoiceNo
+        self.logic.rbTimeRange = self.rbTimeRange
+        self.logic.rbRegistrationDate = self.rbRegistrationDate
+        self.logic.rbExplanation = self.rbExplanation
 
         self.logic.leInvoiceNo = self.leInvoiceNo
         self.logic.leExplanation = self.leExplanation

@@ -224,7 +224,7 @@ QHeaderView::section {
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QRadioButton" name="radioButton1">
+         <widget class="QRadioButton" name="rbInvoiceNo">
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -237,21 +237,21 @@ QHeaderView::section {
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton2">
+         <widget class="QRadioButton" name="rbTimeRange">
+          <property name="text">
+           <string>Search by Time Range</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbRegistrationDate">
           <property name="text">
            <string>Search by RegistrationDate</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton3">
-          <property name="text">
-           <string>Search by LoginDate</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioButton4">
+         <widget class="QRadioButton" name="rbExplanation">
           <property name="text">
            <string>Search by Explanation</string>
           </property>
@@ -269,7 +269,7 @@ QHeaderView::section {
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="pgInvoiceNo">
         <layout class="QHBoxLayout" name="horizontalLayout">

@@ -55,21 +55,21 @@ class calling_page_logic:
 
     def load_invoices(self):
         # Your repo functions return (headers, rows), so we ignore headers
-        if self.radioButton1.isChecked():
-            rows = Load_Save_Data.get_invoices_by_title(self.leInvoiceNo.text().strip())
+        if self.rbInvoiceNo.isChecked():
+            rows = Load_Save_Data.get_invoices_by_Invoice_NO(self.leInvoiceNo.text().strip())
 
 
-        elif self.radioButton2.isChecked():
+        elif self.rbTimeRange.isChecked():
             date_str_start = self.deLoginStart.date().toString("yyyy-MM-dd")
             date_str_end = self.deLoginEnd.date().toString("yyyy-MM-dd")
-            rows = Load_Save_Data.get_invoices_by_logindate(date_str_start, date_str_end)
+            rows = Load_Save_Data.get_invoices_by_time_range(date_str_start, date_str_end)
 
-        elif self.radioButton3.isChecked():
+        elif self.rbRegistrationDate.isChecked():
             date_str = self.deRegstrationDate.date().toString("yyyy-MM-dd")
             rows = Load_Save_Data.get_invoices_by_regestrationdate(date_str)
 
-        else:  # radioButton4
-            rows = Load_Save_Data.get_invoices_by_explanation(self.leExplanation.text().strip())
+        else:  # rbExplanation
+            rows = Load_Save_Data.get_invoices_by_Explanation(self.leExplanation.text().strip())
 
         # Clear + keep the static first row
         self.model.clear()
@@ -85,7 +85,7 @@ class calling_page_logic:
     def populate_table(self, rows):
         model = QStandardItemModel()
         model.setHorizontalHeaderLabels([
-            "Invoice No", "Title","amount" , "Explanation",
+            "Invoice No","amount" , "Explanation",
             "Registration Date", "Login Date"
         ])
 
