@@ -1,17 +1,19 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import Optional
-from PyQt6.QtWidgets import QFileDialog, QWidget
 from dataclasses import dataclass
-from PyQt6.QtGui import QStandardItem, QStandardItemModel
 from app.data.data_base import Load_Save_Data
 from PyQt6.QtCore import Qt, QRect
 from PyQt6.QtGui import QPainter, QStandardItem, QStandardItemModel, QPageSize, QPageLayout
 from PyQt6.QtPrintSupport import QPrinter
 from PyQt6.QtWidgets import (
-    QWidget, QTableView, QFileDialog
+    QWidget, QTableView, QFileDialog, QMessageBox
 )
 from PyQt6.QtGui import QFont, QPen
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+
+
 
 class receipt_entry_logic:
     def browse_image(
@@ -128,7 +130,7 @@ class calling_page_logic:
             raise RuntimeError("Could not start PDF painter")
 
         try:
-            # praintable part
+            # printable part
             page_rect = printer.pageRect(QPrinter.Unit.DevicePixel)
             left = int(page_rect.left())
             top = int(page_rect.top())
@@ -206,3 +208,118 @@ class calling_page_logic:
                 y += row_h
         finally:
             painter.end()
+
+
+    def export_tableview_to_excel(self, view):
+        model = view.model()
+        header = view.horizontalHeader()
+
+        if model is None:
+            raise RuntimeError("Could not find model")
+
+        #columns
+        export_col = []
+        for visual in range(header.count()):
+            logical = header.logicalIndex(visual)
+            if 0<= logical < model.columnCount():
+                export_col.append(logical)
+
+        if export_col is None:
+            raise RuntimeError("Could not find column")
+
+        #building Excel file
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Export Table"
+
+        header_font = Font(bold=True)
+        header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+        for out_col, logical_col in enumerate(export_col, start=1):
+            title = model.headerData(logical_col, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
+            text = "" if title is None else str(title)
+
+            cell = ws.cell(row=1, column=out_col, value=text)
+            cell.font = header_font
+            cell.alignment = header_align
+
+        ws.freeze_panes = "A2"
+
+        #write all visible data rows
+        start_excel_row = 2
+        rows = model.rowCount()
+
+        for r in range(rows):
+            excel_row = start_excel_row + r
+
+            for excel_col, logical_col in enumerate(export_col, start=1):
+                idx = model.index(r, logical_col)
+                value = model.data(idx, Qt.ItemDataRole.DisplayRole)
+                if value is None:
+                    state = model.data(idx, Qt.CheckStateRole)
+                    if state is not None:
+                        value = "✓" if state == Qt.Checked else "✗"
+                    else:
+                        value = ""
+
+                ws.cell(row=excel_row, column=excel_col, value=str(value))
+
+        #Fixing the width of cells for readability
+        from openpyxl.utils import get_column_letter
+
+        max_lens = [0] * len(export_col)
+
+        for row in ws.iter_rows(min_row=1, max_row=ws.max_row,
+                                min_col=1, max_col=len(export_col)):
+            for i, cell in enumerate(row):
+                v = cell.value
+                if v is None:
+                    continue
+                s = str(v)
+                if len(s) > max_lens[i]:
+                    max_lens[i] = len(s)
+
+        for i, m in enumerate(max_lens, start=1):
+            col_letter = get_column_letter(i)
+            width = max(10, min(60, m + 2))
+            ws.column_dimensions[col_letter].width = width
+
+        # Step 6: Save dialog + save workbook + error handling
+        parent = view.window()
+        path, _ = QFileDialog.getSaveFileName(
+            parent,
+            "Save Excel",
+            "Export.xlsx",
+            "Excel Workbook (*.xlsx)"
+        )
+
+        if not path:
+            return  # user cancelled
+
+        if not path.lower().endswith(".xlsx"):
+            path += ".xlsx"
+
+        try:
+            wb.save(path)
+        except PermissionError:
+            QMessageBox.warning(
+                self,
+                "Save failed",
+                "Could not write the file.\n"
+                "If it's open in Excel, close it and try again, or choose another location."
+            )
+            return
+        except OSError as e:
+            QMessageBox.critical(
+                self,
+                "Save failed",
+                f"OS error while saving the file:\n{e}"
+            )
+            return
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Save failed",
+                f"Unexpected error while saving the file:\n{e}"
+            )
+            return

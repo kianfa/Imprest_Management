@@ -78,6 +78,8 @@ class Calling_Page(QWidget):
 
         self.UI.btnSaveasPDF.clicked.connect(self.on_save_pdf_clicked)
 
+        self.UI.btnSaveasexcel.clicked.connect(self.on_save_excel_clicked)
+
     def change_page(self, index):
         if self.sender().isChecked():
             self.UI.stackedWidget.setCurrentIndex(index)
@@ -89,3 +91,6 @@ class Calling_Page(QWidget):
         path, _ = QFileDialog.getSaveFileName(self, "Save PDF", "results.pdf", "PDF (*.pdf)")
         if path:
             calling_page_logic.export_tableview_to_pdf(self.UI.tableView, path)
+
+    def on_save_excel_clicked(self):
+        calling_page_logic().export_tableview_to_excel(self.UI.tableView)
