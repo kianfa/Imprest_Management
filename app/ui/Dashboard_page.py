@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow,QWidget
+from PyQt6.QtWidgets import QMainWindow
 from PyQt6.uic import loadUi
 from pathlib import Path
 
@@ -8,15 +8,16 @@ class Dashboard(QMainWindow):
         from app.controller.navigator import Navigator
 
         ui_path = Path(__file__).parent / "Dashboard.ui"
-        loadUi(ui_path, self)
+        self.UI = loadUi(ui_path, self)
+
         self.setWindowTitle("Dashboard")
         self.nav=Navigator()
-        self.btndashboard_input.clicked.connect(self.Input_Clicked)
-        self.btndashboard_save.clicked.connect(self.Save_Clicked)
+        self.UI.btndashboard_input.clicked.connect(self.Input_Clicked)
+        self.UI.btndashboard_save.clicked.connect(self.Save_Clicked)
 
     def Input_Clicked(self):
-        self.expense_entry = self.nav.dashboard_page_navigator_expense_entry(self)
+        self.UI.expense_entry = self.nav.dashboard_page_navigator_expense_entry(self)
 
 
     def Save_Clicked(self):
-        self.calling = self.nav.dashboard_page_navigator_calling_page(self)
+        self.UI.calling = self.nav.dashboard_page_navigator_calling_page(self)

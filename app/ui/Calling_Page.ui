@@ -12,8 +12,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
-    <height>600</height>
+    <width>16777215</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -264,8 +264,8 @@ QHeaderView::section {
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="maximumSize">
         <size>
-         <width>780</width>
-         <height>90</height>
+         <width>16777215</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="currentIndex">
@@ -356,9 +356,15 @@ QHeaderView::section {
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>181</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
-         <width>800</width>
+         <width>16777215</width>
          <height>16777215</height>
         </size>
        </property>
@@ -388,17 +394,52 @@ QHeaderView::section {
        </property>
       </widget>
      </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="btnSaveasexcel">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: transparent;
+    color: #FF9800;
+    font-weight: bold;
+    border: 2px solid #FF9800;
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-height: 40px;
+}
+
+QPushButton:hover {
+    background-color: #232323;
+}
+
+QPushButton:pressed {
+    background-color: #2B2B2B;
+}
+</string>
+       </property>
        <property name="text">
         <string>Save as excel</string>
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="btnSaveasPDF">
+       <property name="text">
+        <string>Save as PDF</string>
+       </property>
+      </widget>
+     </item>
     </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5"/>
    </item>
   </layout>
  </widget>

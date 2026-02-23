@@ -9,20 +9,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>980</width>
-    <height>680</height>
+    <width>900</width>
+    <height>753</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>900</width>
-    <height>640</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1920</width>
-    <height>1080</height>
+    <width>16777215</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -131,6 +131,7 @@ QLabel#lblSelectPicture {
     color: rgba(255,255,255,170);
     background-color: rgba(255,255,255,4);
 }
+
 /* =========================
    BUTTONS
    ========================= */
@@ -183,6 +184,28 @@ QPushButton:disabled {
     border-color: #555;
     color: #555;
 }
+
+/* =========================
+   BACK BUTTON (creative)
+   ========================= */
+QToolButton#btnBack {
+    background-color: rgba(255, 152, 0, 10);
+    color: #FF9800;
+    border: 1.5px solid rgba(255, 152, 0, 140);
+    border-radius: 22px;              /* circular (44px button) */
+    font-size: 18px;
+    font-weight: 900;
+}
+
+QToolButton#btnBack:hover {
+    background-color: rgba(255, 152, 0, 22);
+    border: 2px solid #FFA726;
+}
+
+QToolButton#btnBack:pressed {
+    background-color: rgba(255, 152, 0, 55);
+    color: #111111;
+}
    </string>
   </property>
   <layout class="QVBoxLayout" name="rootLayout">
@@ -212,10 +235,7 @@ QPushButton:disabled {
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
-     <layout class="QVBoxLayout" name="headerLayout">
-      <property name="spacing">
-       <number>6</number>
-      </property>
+     <layout class="QGridLayout" name="gridLayout">
       <property name="leftMargin">
        <number>18</number>
       </property>
@@ -228,14 +248,21 @@ QPushButton:disabled {
       <property name="bottomMargin">
        <number>14</number>
       </property>
-      <item>
-       <widget class="QLabel" name="lblTitle">
-        <property name="text">
-         <string>Receipt Entry</string>
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="headerTopRow">
+        <property name="spacing">
+         <number>12</number>
         </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="lblTitle">
+          <property name="text">
+           <string>Receipt Entry</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item>
+      <item row="3" column="0">
        <widget class="QLabel" name="lblSubtitle">
         <property name="styleSheet">
          <string notr="true">QLabel {
@@ -289,6 +316,94 @@ QPushButton:disabled {
         <property name="verticalSpacing">
          <number>10</number>
         </property>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="cbExpenseType">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maxVisibleItems">
+           <number>6</number>
+          </property>
+          <property name="placeholderText">
+           <string>Expense Type</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>B</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>C</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="cbCompany">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Company</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>S</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>T</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="7" column="0" colspan="2">
+         <widget class="QTextEdit" name="teExplanation">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Write a short description (optional)...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QDateEdit" name="deDate">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QDateEdit#deDate::drop-down { border-color: #FF9800; }
+QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
+</string>
+          </property>
+          <property name="displayFormat">
+           <string>yyyy/MM/dd</string>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QLineEdit" name="leExpense">
           <property name="minimumSize">
@@ -315,50 +430,6 @@ QPushButton:disabled {
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QDateEdit" name="deDate">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QDateEdit#deDate::drop-down { border-color: #FF9800; }
-QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
-</string>
-          </property>
-          <property name="displayFormat">
-           <string>yyyy/MM/dd</string>
-          </property>
-          <property name="calendarPopup">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="cbCompany">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Company</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>S</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>T</string>
-           </property>
-          </item>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="cbExpenseCenter">
           <property name="minimumSize">
@@ -372,50 +443,6 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
           </property>
           <property name="placeholderText">
            <string>Expense Center</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>A</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>B</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>C</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QTextEdit" name="teExplanation">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Write a short description (optional)...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="cbExpenseType">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="maxVisibleItems">
-           <number>6</number>
-          </property>
-          <property name="placeholderText">
-           <string>Expense Type</string>
           </property>
           <item>
            <property name="text">
@@ -553,6 +580,22 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="minimumSize">
+        <size>
+         <width>180</width>
+         <height>64</height>
+        </size>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnSave">

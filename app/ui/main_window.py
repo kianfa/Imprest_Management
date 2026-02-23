@@ -8,17 +8,18 @@ class MainWindow(QDialog):
     def __init__(self):
         super().__init__()
         ui_path = Path(__file__).parent / "main_window.ui"
-        loadUi(ui_path, self)
+        self.UI = loadUi(ui_path, self)
+
         from app.controller.navigator import Navigator
         self.dashboard = None
         self.setWindowTitle("My App")
         self.logic = main_window_logic()
         self.nav=Navigator()
-        self.btnLogin.clicked.connect(self.on_login_clicked)
+        self.UI.btnLogin.clicked.connect(self.on_login_clicked)
 
     def on_login_clicked(self) -> None:
-        username = self.leUsername.text().strip()
-        password = self.lePassword.text()
+        username = self.UI.leUsername.text().strip()
+        password = self.UI.lePassword.text()
 
         result = self.logic.login(username, password)
         if not result.ok:
