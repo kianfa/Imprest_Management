@@ -512,7 +512,20 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
            <number>10</number>
           </property>
           <item>
-           <widget class="QPushButton" name="btnBrowse">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnAdd">
             <property name="minimumSize">
              <size>
               <width>160</width>
@@ -523,7 +536,7 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
              <cursorShape>PointingHandCursor</cursorShape>
             </property>
             <property name="text">
-             <string>Browse Image</string>
+             <string>Add image</string>
             </property>
            </widget>
           </item>

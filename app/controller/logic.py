@@ -19,23 +19,19 @@ class receipt_entry_logic:
     def browse_image(
             self,
             parent: QWidget,
-            title: str = "Select an image",
+            title: str = "add image",
             start_dir: Optional[str | Path] = None,
-    ) -> Optional[str]:
-        """
-        Opens a file dialog and returns the selected image path as a string.
-        Returns None if the user cancels.
-        """
+    ) -> list[str]:
         start_dir_str = str(start_dir) if start_dir else ""
 
-        file_path, _ = QFileDialog.getOpenFileName(
+        file_paths, _ = QFileDialog.getOpenFileNames(
             parent,
             title,
             start_dir_str,
             "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp);;All Files (*)",
         )
 
-        return file_path or None
+        return file_paths
 
 
 @dataclass
