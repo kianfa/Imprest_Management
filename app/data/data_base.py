@@ -65,13 +65,13 @@ class Load_Save_Data:
         return rows
 
     @staticmethod
-    def save_data(self,data: dict):
-        DataBase.insert_record(
+    def save_data(data: dict):
+        DataBase().insert_record(
             Invoice_NO=data["Invoice NO"],
             explanation=data["explanation"],
             amount=float(data["amount"]),
             record_date=data["record_date"],
-            image_path=data["image_path"],
+            image_path=data.get("image_paths", ""),
             source_pc=data["source_pc"],
             expense_center=data["expense_center"],
             expense_type=data["expense_type"],
