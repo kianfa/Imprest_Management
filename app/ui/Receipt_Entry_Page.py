@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget,QMessageBox
 from PyQt6.uic import loadUi
 from pathlib import Path
-from app.data.data_base import Load_Save_Data
+from app.data.data_base import Load_Save_Data, ImageStore
 from app.controller.logic import receipt_entry_logic
 from app.controller.navigator import Navigator
 

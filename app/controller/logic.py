@@ -2,16 +2,20 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass
-from app.data.data_base import Load_Save_Data
+from app.data.data_base import Load_Save_Data, DataBase
 from PyQt6.QtCore import Qt, QRect
 from PyQt6.QtGui import QPainter, QStandardItem, QStandardItemModel, QPageSize, QPageLayout
 from PyQt6.QtPrintSupport import QPrinter
 from PyQt6.QtWidgets import (
     QWidget, QTableView, QFileDialog, QMessageBox
 )
-from PyQt6.QtGui import QFont, QPen
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
+from PyQt6.QtCore import Qt, QRect, QFile
+from PyQt6.QtGui import QPainter, QPen, QFont, QImage
+from PyQt6.QtPrintSupport import QPrinter
+from PyQt6.QtGui import QPageSize, QPageLayout
+from PyQt6.QtWidgets import QTableView
 
 
 
@@ -32,6 +36,8 @@ class receipt_entry_logic:
         )
 
         return file_paths
+
+
 
 
 @dataclass
@@ -101,39 +107,33 @@ class calling_page_logic:
         self.tableView.setModel(model)
 
 
-    def export_tableview_to_pdf(table: QTableView, filename: str) -> None:
+
+    def export_tableview_to_pdf(table: QTableView, filename: str, image_col_name: str = "image_path") -> None:
         model = table.model()
         if model is None:
             raise RuntimeError("Table has no model")
 
-        # PDF Output
         printer = QPrinter(QPrinter.PrinterMode.ScreenResolution)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setOutputFileName(filename)
 
-        # Page settings
         printer.setPageSize(QPageSize(QPageSize.PageSizeId.A4))
         printer.setPageOrientation(QPageLayout.Orientation.Portrait)
 
-        # Font
         painter = QPainter(printer)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
-        base_font = QFont(table.font())
-        base_font.setPointSize(20)
-        painter.setFont(base_font)
 
         if not painter.isActive():
             raise RuntimeError("Could not start PDF painter")
 
         try:
-            # printable part
             page_rect = printer.pageRect(QPrinter.Unit.DevicePixel)
             left = int(page_rect.left())
             top = int(page_rect.top())
             right = int(page_rect.right())
             bottom = int(page_rect.bottom())
+            avail_w = int(right - left)
 
-            # Basic typography / spacing
             painter.setFont(table.font())
             fm = painter.fontMetrics()
             row_h = int(fm.height() + 10)
@@ -143,10 +143,8 @@ class calling_page_logic:
             rows = model.rowCount()
             cols = model.columnCount()
 
-            # Column widths (start from view widths, then scale to fit page width)
             col_widths = [max(200, table.columnWidth(c)) for c in range(cols)]
             total_w = sum(col_widths)
-            avail_w = int(right - left)
 
             if total_w > avail_w:
                 scale = avail_w / total_w
@@ -154,7 +152,7 @@ class calling_page_logic:
             else:
                 col_widths = [int(w) for w in col_widths]
 
-            def draw_header(y: int) -> int:
+            def draw_table_header(y: int) -> int:
                 x = left
                 for c in range(cols):
                     w = col_widths[c]
@@ -162,23 +160,26 @@ class calling_page_logic:
                     painter.drawRect(rect)
 
                     text = str(model.headerData(c, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole) or "")
-                    painter.drawText(rect.adjusted(cell_pad, 0, -cell_pad, 0),
-                                     Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, text)
+                    painter.drawText(
+                        rect.adjusted(cell_pad, 0, -cell_pad, 0),
+                        Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft,
+                        text
+                    )
                     x += w
                 return y + header_h
 
             def new_page():
                 printer.newPage()
 
+            # ---------- DRAW TABLE ----------
             y = top
-            y = draw_header(y)
+            y = draw_table_header(y)
 
             for r in range(rows):
-                # Page break if next row doesn't fit
                 if y + row_h > bottom:
                     new_page()
                     y = top
-                    y = draw_header(y)
+                    y = draw_table_header(y)
 
                 x = left
                 for c in range(cols):
@@ -190,7 +191,6 @@ class calling_page_logic:
                     val = model.data(idx, Qt.ItemDataRole.DisplayRole)
                     text = "" if val is None else str(val)
 
-                    # Simple alignment heuristic: numbers right, text left
                     align = Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft
                     try:
                         float(text)
