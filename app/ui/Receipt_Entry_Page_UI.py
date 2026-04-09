@@ -36,7 +36,7 @@ class Expense_Receipt_Entry(QWidget):
 
 
     def open_dashboard(self):
-        self.UI.dashboard = self.nav.expense_entry_page_navigator(self)
+        self.nav.expense_entry_page_navigator(self)
 
 
     def save_record(self):

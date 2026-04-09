@@ -18,6 +18,6 @@ class Dashboard(QMainWindow):
 
 
     def Input_Clicked(self):
-        self.UI.expense_entry = self.nav.dashboard_page_navigator_expense_entry(self)
+        self.nav.dashboard_page_navigator_expense_entry(self)
     def Save_Clicked(self):
-        self.UI.calling = self.nav.dashboard_page_navigator_calling_page(self)
+        self.nav.dashboard_page_navigator_calling_page(self)

@@ -61,24 +61,20 @@ class Calling_Page(QWidget):
 
         #loading data
         self.logic.tableView = self.UI.tableView
-
         self.logic.rbInvoiceNo = self.UI.rbInvoiceNo
         self.logic.rbTimeRange = self.UI.rbTimeRange
         self.logic.rbRegistrationDate = self.UI.rbRegistrationDate
         self.logic.rbExplanation = self.UI.rbExplanation
-
         self.logic.leInvoiceNo = self.UI.leInvoiceNo
         self.logic.leExplanation = self.UI.leExplanation
         self.logic.deRegstrationDate = self.UI.deRegstrationDate
         self.logic.deLoginStart = self.UI.deLoginStart
         self.logic.deLoginEnd = self.UI.deLoginEnd
 
+
         self.UI.btnSearch.clicked.connect(self.logic.load_invoices)
-
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
-
         self.UI.btnSaveasPDF.clicked.connect(self.on_save_pdf_clicked)
-
         self.UI.btnSaveasexcel.clicked.connect(self.on_save_excel_clicked)
 
     def change_page(self, index):
@@ -86,7 +82,7 @@ class Calling_Page(QWidget):
             self.UI.stackedWidget.setCurrentIndex(index)
 
     def open_dashboard(self):
-        self.UI.dashboard = self.nav.calling_entry_page_navigator(self)
+        self.nav.calling_entry_page_navigator(self)
 
     def on_save_pdf_clicked(self):
         path, _ = QFileDialog.getSaveFileName(self, "Save PDF", "results.pdf", "PDF (*.pdf)")

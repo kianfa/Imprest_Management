@@ -11,7 +11,6 @@ class MainWindow(QDialog):
         self.UI = loadUi(ui_path, self)
 
         from app.controller.navigator import Navigator
-        self.dashboard = None
         self.setWindowTitle("My App")
         self.logic = main_window_logic()
         self.nav=Navigator()
@@ -25,4 +24,4 @@ class MainWindow(QDialog):
         if not result.ok:
             QMessageBox.warning(self, "Login", result.error)
             return
-        self.dashboard = self.nav.main_window_navigator(self)
+        self.nav.main_window_navigator(self)
