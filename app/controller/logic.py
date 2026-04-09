@@ -1,4 +1,3 @@
-from __future__ import annotations
 from dataclasses import dataclass
 from app.data.data_base import Load_Save_Data
 from PyQt6.QtGui import QStandardItem, QStandardItemModel
@@ -10,6 +9,7 @@ from openpyxl.styles import Font, Alignment
 from typing import Optional, Union
 from pathlib import Path
 from PyQt6.QtCore import Qt
+from __future__ import annotations
 
 
 
@@ -23,7 +23,7 @@ class receipt_entry_logic:
             parent: QWidget,
             title: str = "add image",
             start_dir: Optional[str | Path] = None,
-    ) -> list[str]:
+        ) -> list[str]:
         start_dir_str = str(start_dir) if start_dir else ""
 
         file_paths, _ = QFileDialog.getOpenFileNames(
@@ -37,6 +37,7 @@ class receipt_entry_logic:
 
 
     def add_image_logic(self, parent):
+        #TODO(NGH): Do I need change the value of start_dir to use it on other PC's?
         new_paths = self.browse_image(parent=parent, title="Add images", start_dir="D:\Work\Imprest_Management\Imprest_Management_Forked")
         if not new_paths:
             return
@@ -52,11 +53,11 @@ class receipt_entry_logic:
 
 
 
+
 @dataclass
 class LoginResult:
     ok: bool
     error: str = ""
-
 class main_window_logic:
     def validate_inputs(self, username: str, password: str) -> LoginResult:
         if not username:
@@ -67,6 +68,7 @@ class main_window_logic:
 
     def login(self, username: str, password: str) -> LoginResult:
         return self.validate_inputs(username, password)
+
 
 
 
@@ -135,6 +137,7 @@ class calling_page_logic:
             )
 
         self.tableView.setModel(model)
+
 
 
 
