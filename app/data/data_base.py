@@ -36,16 +36,6 @@ class Load_Save_Data:
         return self.fetch_all(query,(Invoice_NO,))
 
 
-    def id_by_invoice_no(self, Invoice_No) -> str:
-        query = """
-                SELECT id
-                FROM records
-                WHERE Invoice_NO LIKE ?
-                """
-        rows = self.fetch_all(query, (Invoice_No,))
-        return rows
-
-
     @classmethod
     def get_invoices_by_explanation(self, explanation):
         query="""
@@ -54,16 +44,6 @@ class Load_Save_Data:
             WHERE explanation LIKE ?
         """
         return self.fetch_all(query,(f"%{explanation}%",))
-
-
-    def id_by_explanation(self, explanation) -> list[str]:
-        query = """
-                SELECT id
-                FROM records
-                WHERE explanation LIKE ?
-                """
-        rows = self.fetch_all(query, (f"%{explanation}%",))
-        return rows
 
 
     @classmethod
@@ -76,16 +56,6 @@ class Load_Save_Data:
         return self.fetch_all(query,(regestrationdate,))
 
 
-    def id_by_regestrationdate(self, regestrationdate)->list[str]:
-        query = """
-        SELECT id
-        FROM records
-        WHERE record_date = ?
-        """
-        rows = self.fetch_all(query, (regestrationdate,))
-        return rows
-
-
     @classmethod
     def get_invoices_by_time_range(self, startdate,enddate):
         query="""
@@ -96,21 +66,6 @@ class Load_Save_Data:
         conn = self.get_connection()
         cur = conn.cursor()
         cur.execute(query,(startdate,enddate))
-        rows = cur.fetchall()
-        conn.close()
-        return rows
-
-
-    def id_by_time_range(self, startdate, enddate) -> list[str]:
-        query = """
-                SELECT id
-                FROM records
-                WHERE record_date >= ? \
-                  AND record_date <= ? \
-                """
-        conn = self.get_connection()
-        cur = conn.cursor()
-        cur.execute(query, (startdate, enddate))
         rows = cur.fetchall()
         conn.close()
         return rows
@@ -225,25 +180,6 @@ class DataBase:
 
         conn.commit()
         return record_id
-
-
-    def get_all_records(self):
-        conn = self.get_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM records WHERE deleted = 0")
-        rows = cur.fetchall()
-        conn.close()
-        return rows
-
-    def id_from_invoice_no(self, invoice_no:int)->Optional[str]:
-        conn = self.get_connection()
-        cur = conn.cursor()
-
-        cur.execute("SELECT id FROM records WHERE Invoice_NO = ?", (invoice_no,))
-        row = cur.fetchone()
-
-        conn.close()
-        return row[0] if row else None
 
 
 

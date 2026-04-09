@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from app.data.data_base import Load_Save_Data
 from PyQt6.QtGui import QStandardItem, QStandardItemModel
@@ -9,7 +10,6 @@ from openpyxl.styles import Font, Alignment
 from typing import Optional, Union
 from pathlib import Path
 from PyQt6.QtCore import Qt
-from __future__ import annotations
 
 
 
@@ -103,40 +103,6 @@ class calling_page_logic:
         for row in rows:
             items = [QStandardItem("" if v is None else str(v)) for v in row]
             self.model.appendRow(items)
-
-
-    def sending_img_path(self) -> list[str]:
-        if self.rbInvoiceNo.isChecked():
-            img_path = Load_Save_Data().id_by_invoice_no(self.leInvoiceNo.text().strip())
-
-        elif self.rbTimeRange.isChecked():
-            date_str_start = self.deLoginStart.date().toString("yyyy-MM-dd")
-            date_str_end = self.deLoginEnd.date().toString("yyyy-MM-dd")
-            img_path = Load_Save_Data().id_by_time_range(date_str_start, date_str_end)
-
-        elif self.rbRegistrationDate.isChecked():
-            date_str = self.deRegstrationDate.date().toString("yyyy-MM-dd")
-            img_path = Load_Save_Data().id_by_regestrationdate(date_str)
-
-        else:  # rbExplanation
-            img_path = Load_Save_Data().id_by_explanation(self.leExplanation.text().strip())
-
-        return img_path
-
-
-    def populate_table(self, rows):
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels([
-            "Invoice No","amount" , "Explanation",
-            "Registration Date", "Login Date"
-        ])
-
-        for row in rows:
-            model.appendRow(
-                [QStandardItem(str(col)) for col in row]
-            )
-
-        self.tableView.setModel(model)
 
 
 
