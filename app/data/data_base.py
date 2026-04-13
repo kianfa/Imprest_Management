@@ -12,12 +12,12 @@ class Load_Save_Data:
 
 
     @classmethod
-    def get_connection(self) -> None:
+    def get_connection(self) -> sqlite3.Connection:
         return sqlite3.connect(self.DB_PATH)
 
 
     @classmethod
-    def fetch_all(self, query, params=None) -> None:
+    def fetch_all(self, query, params=None) -> list[tuple]:
         conn = self.get_connection()
         cur = conn.cursor()
         cur.execute(query,params)
@@ -27,7 +27,7 @@ class Load_Save_Data:
 
 
     @classmethod
-    def get_invoices_by_Invoice_NO(self, Invoice_NO) -> None:
+    def get_invoices_by_Invoice_NO(self, Invoice_NO) -> list[tuple]:
         query="""
             SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
             FROM records
@@ -37,7 +37,7 @@ class Load_Save_Data:
 
 
     @classmethod
-    def get_invoices_by_explanation(self, explanation) -> None:
+    def get_invoices_by_explanation(self, explanation) -> list[tuple]:
         query="""
             SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
             FROM records
@@ -47,7 +47,7 @@ class Load_Save_Data:
 
 
     @classmethod
-    def get_invoices_by_regestrationdate(self, regestrationdate) -> None:
+    def get_invoices_by_regestrationdate(self, regestrationdate) -> list[tuple]:
         query="""
             SELECT Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name
             FROM records
@@ -57,7 +57,7 @@ class Load_Save_Data:
 
 
     @classmethod
-    def get_invoices_by_time_range(self, startdate,enddate) -> None:
+    def get_invoices_by_time_range(self, startdate,enddate) -> list[tuple]:
         query="""
         SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
         FROM records
@@ -107,7 +107,7 @@ class DataBase:
 
 
     @classmethod
-    def get_connection(self) -> None:
+    def get_connection(self) -> sqlite3.Connection:
         return sqlite3.connect(self.DB_PATH)
 
 
