@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from app.data.data_base import Load_Save_Data
 from PyQt6.QtGui import QStandardItem, QStandardItemModel
 from PyQt6.QtWidgets import (
-    QWidget, QFileDialog, QMessageBox
+    QWidget, QFileDialog, QMessageBox, QRadioButton, QDateEdit, QLineEdit
 )
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
@@ -37,7 +37,6 @@ class receipt_entry_logic:
 
 
     def add_image_logic(self, parent) -> None:
-        #TODO(NGH): Do I need change the value of start_dir to use it on other PC's?
         new_paths = self.browse_image(parent=parent, title="Add images", start_dir="./")
         if not new_paths:
             return
@@ -76,22 +75,25 @@ class calling_page_logic:
     def __init__(self) ->None:
         super().__init__()
 
-    def load_invoices(self) -> None:
+    def load_invoices(self, rbi : QRadioButton, rbt : QRadioButton,
+                      lei : QLineEdit, delogins : QDateEdit, delogine : QDateEdit,
+                      rbrd : QRadioButton, derd : QDateEdit,
+                      lee : QLineEdit) -> None:
         # Your repo functions return (headers, rows), so we ignore headers
-        if self.rbInvoiceNo.isChecked():
-            rows = Load_Save_Data.get_invoices_by_Invoice_NO(self.leInvoiceNo.text().strip())
+        if rbi.isChecked():
+            rows = Load_Save_Data.get_invoices_by_Invoice_NO(lei.text().strip())
 
-        elif self.rbTimeRange.isChecked():
-            date_str_start = self.deLoginStart.date().toString("yyyy-MM-dd")
-            date_str_end = self.deLoginEnd.date().toString("yyyy-MM-dd")
+        elif rbt.isChecked():
+            date_str_start = delogins.date().toString("yyyy-MM-dd")
+            date_str_end = delogine.date().toString("yyyy-MM-dd")
             rows = Load_Save_Data.get_invoices_by_time_range(date_str_start, date_str_end)
 
-        elif self.rbRegistrationDate.isChecked():
-            date_str = self.deRegstrationDate.date().toString("yyyy-MM-dd")
+        elif rbrd.isChecked():
+            date_str = derd.date().toString("yyyy-MM-dd")
             rows = Load_Save_Data.get_invoices_by_regestrationdate(date_str)
 
         else:  # rbExplanation
-            rows = Load_Save_Data.get_invoices_by_explanation(self.leExplanation.text().strip())
+            rows = Load_Save_Data.get_invoices_by_explanation(lee.text().strip())
 
         # Clear + keep the static first row
         self.model.clear()
