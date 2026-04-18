@@ -18,6 +18,9 @@ PathLike = Union[str, Path]
 
 
 class receipt_entry_logic:
+    def __init__(self):
+        self.selected_image_paths = []
+
     def browse_image(
             self,
             parent: QWidget,
