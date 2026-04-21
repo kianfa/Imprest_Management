@@ -49,7 +49,7 @@ class Expense_Receipt_Entry(QWidget):
             "expense_center": self.UI.cbExpenseCenter.currentText(),
             "expense_type": self.UI.cbExpenseType.currentText(),
             "company_name": self.UI.cbCompany.currentText(),
-            "source_pc": "PC-1"
+            "source_pc": "PC-1" #TODO(NGH) : Fix this item after connecting the PCs.
         }
         #try:
         Load_Save_Data().save_data(data)
