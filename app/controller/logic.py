@@ -181,7 +181,7 @@ class exporting:
             margin_x = pt_to_px_x(24)
             margin_y = pt_to_px_y(24)
 
-            def page_box() -> None:
+            def page_box() -> tuple:
                 page = printer.pageRect(QPrinter.Unit.DevicePixel)
                 left = int(page.left() + margin_x)
                 top = int(page.top() + margin_y)
@@ -195,7 +195,7 @@ class exporting:
                     s = s.replace("file:///", "")
                 return s
 
-            def _flatten(v) -> None:
+            def _flatten(v) -> list:
                 """Accepts: None, str, Path, list/tuple/set, or stringified list/tuple."""
                 if v is None:
                     return []
@@ -222,7 +222,7 @@ class exporting:
                     return p
                 return (base / p) if base else p
 
-            def find_col_by_header(name: str) -> None:
+            def find_col_by_header(name: str) -> Optional[int]:
                 for c in range(model.columnCount()):
                     h = model.headerData(c, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
                     if h is not None and str(h) == name:
