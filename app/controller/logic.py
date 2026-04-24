@@ -1,15 +1,19 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from app.data.data_base import Load_Save_Data
-from PyQt6.QtGui import QStandardItem, QStandardItemModel
+from PyQt6.QtGui import QStandardItem
 from PyQt6.QtWidgets import (
-    QWidget, QFileDialog, QMessageBox, QRadioButton, QDateEdit, QLineEdit
+    QFileDialog, QRadioButton, QDateEdit, QLineEdit
 )
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 from typing import Optional, Union
 from pathlib import Path
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QWidget, QMessageBox, QComboBox, QInputDialog, QMenu
+)
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtGui import QAction, QIcon
 
 
 
@@ -20,6 +24,112 @@ PathLike = Union[str, Path]
 class receipt_entry_logic:
     def __init__(self):
         self.selected_image_paths = []
+
+    def enhance_combo(self, combo: QComboBox, settings_key: str, default_items=None) -> None:
+        """Add '+' item and right‑click removal to an existing QComboBox."""
+        if default_items is None:
+            default_items = []
+
+        combo.settings_key = settings_key
+        combo._special_text = "➕ Add new…"
+        combo._block_selection = False
+        combo._default_items = default_items
+
+        def load_items() -> None:
+            settings = QSettings('MyCompany', 'MyApp')
+            items = settings.value(combo.settings_key, [])
+            if not items:
+                items = combo._default_items.copy()
+
+            combo.blockSignals(True)
+            combo.clear()
+            if items:
+                combo.addItems(items)
+            combo.addItem(combo._special_text)
+            combo.blockSignals(False)
+
+        def save_items() -> None:
+            items = []
+            for i in range(combo.count()):
+                text = combo.itemText(i)
+                if text != combo._special_text:
+                    items.append(text)
+            QSettings('MyCompany', 'MyApp').setValue(combo.settings_key, items)
+
+        def on_index_changed(index) -> None:
+            if combo._block_selection:
+                return
+            if combo.itemText(index) == combo._special_text:
+                combo._block_selection = True
+                new_item, ok = QInputDialog.getText(combo, "Add new item", "Enter item name:")
+                if ok and new_item.strip():
+                    new_item = new_item.strip()
+                    if combo.findText(new_item) == -1:
+                        insert_pos = combo.count() - 1  # before the special item
+                        combo.insertItem(insert_pos, new_item)
+                        save_items()
+                        combo.setCurrentIndex(insert_pos)
+                    else:
+                        QMessageBox.information(combo, "Duplicate", f'"{new_item}" already exists.')
+                # Reset selection to first normal item
+                if combo.count() > 1:
+                    combo.setCurrentIndex(0)
+                combo._block_selection = False
+
+        def remove_item_at_row(row) -> None:
+            if row < 0 or row >= combo.count():
+                return
+            item_text = combo.itemText(row)
+            if item_text == combo._special_text:
+                return
+            reply = QMessageBox.question(
+                combo, "Remove item",
+                f'Are you sure you want to remove "{item_text}"?',
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if reply == QMessageBox.StandardButton.Yes:
+                combo._block_selection = True
+                combo.removeItem(row)
+                save_items()
+                combo._block_selection = False
+
+        def on_view_context_menu(point) -> None:
+            """Called when right‑clicking inside the dropdown list."""
+            view = combo.view()
+            index = view.indexAt(point)
+            if not index.isValid():
+                return
+            row = index.row()
+            if combo.itemText(row) == combo._special_text:
+                return
+            menu = QMenu()
+            remove_action = QAction("Remove", combo)
+            icon = QIcon.fromTheme("edit-delete")
+            if not icon.isNull():
+                remove_action.setIcon(icon)
+            else:
+                remove_action.setText("🗑 Remove")
+            remove_action.triggered.connect(lambda checked, r=row: remove_item_at_row(r))
+            menu.addAction(remove_action)
+            menu.exec(view.mapToGlobal(point))
+
+        # Get the dropdown view (this creates it if necessary)
+        view = combo.view()
+        view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        view.customContextMenuRequested.connect(on_view_context_menu)
+
+        # Disconnect any previous connection to avoid duplicates
+        try:
+            combo.currentIndexChanged.disconnect()
+        except TypeError:
+            pass
+        combo.currentIndexChanged.connect(on_index_changed)
+
+        # Attach helper methods (optional)
+        combo.load_items = load_items
+        combo.save_items = save_items
+
+        load_items()
 
     def browse_image(
             self,
