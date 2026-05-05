@@ -99,6 +99,15 @@ class Load_Save_Data:
         return [p.strip() for p in raw.split("|") if p.strip()]
 
 
+    def invoice_exists(self, invoice_number: str) -> bool:
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM records WHERE Invoice_NO = ?", (invoice_number,))
+        exists = cur.fetchone() is not None
+        conn.close()
+        return exists
+
+
 
 class DataBase:
     DB_PATH = Path(__file__).parent / "app.db"

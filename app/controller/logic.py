@@ -163,7 +163,18 @@ class receipt_entry_logic:
             if p not in self.selected_image_paths:
                 self.selected_image_paths.append(p)
 
+    def show_field_error(self, field_name) -> None:
+        QMessageBox.warning(None,"Input Error", f"Field '{field_name}' cannot be empty.")
 
+    def show_duplicate_error(self, invoice_number) -> None:
+        QMessageBox.warning(None, "Duplicate Invoice",
+                            f"'{invoice_number}' already exists.\nPlease use a unique invoice number.")
+
+    def duplicate_check(self, invoice) -> bool:
+        db = Load_Save_Data()
+        if db.invoice_exists(invoice):
+            return False
+        return True
 
 
 @dataclass
@@ -230,10 +241,10 @@ class exporting:
             self,
             table,
             filename: str,
-            image_col_name: str = "image_path",
+            image_col_name: str = "image_path",  # ← column header name, not a path!
             extra_image_sources=None,
             recursive: bool = False,
-            base_dir=None,  # set this to your images root if paths are relative
+            base_dir: str | None = None,  # ← set this to your images root if paths are relative
     ) -> None:
         """
         1) Exports the QTableView as a simple grid table into PDF (A4 portrait).
@@ -243,18 +254,13 @@ class exporting:
            - fallback: self.sending_img_path() if available
         """
 
-        # ---- Qt imports (PyQt6 / PySide6) ----
-        try:
-            from PyQt6.QtCore import Qt, QRect, QRectF
-            from PyQt6.QtGui import QPainter, QPen, QFont, QImageReader, QPageSize, QPageLayout
-            from PyQt6.QtPrintSupport import QPrinter
-        except Exception:
-            from PyQt6.QtCore import Qt, QRect, QRectF
-            from PyQt6.QtGui import QPainter, QPen, QFont, QImageReader, QPageSize, QPageLayout
-            from PyQt6.QtPrintSupport import QPrinter
-
+        # ---- Qt imports ----
+        from PyQt6.QtCore import Qt, QRect, QRectF
+        from PyQt6.QtGui import QPainter, QPen, QFont, QImageReader, QPageSize, QPageLayout
+        from PyQt6.QtPrintSupport import QPrinter
         from pathlib import Path
         import ast
+        from typing import Optional
 
         model = table.model()
         if model is None:
@@ -306,7 +312,6 @@ class exporting:
                 return s
 
             def _flatten(v) -> list:
-                """Accepts: None, str, Path, list/tuple/set, or stringified list/tuple."""
                 if v is None:
                     return []
                 if isinstance(v, Path):
@@ -349,7 +354,6 @@ class exporting:
             left, top, right, bottom = page_box()
             rows, cols = model.rowCount(), model.columnCount()
 
-            # If no columns, skip table drawing but still try images
             if cols > 0:
                 cell_pad = pt_to_px_x(4)
                 row_h = int(fm.height() + pt_to_px_y(10))
@@ -358,7 +362,7 @@ class exporting:
                 avail_w = right - left
                 base_w = max(1, avail_w // cols)
                 col_widths = [base_w] * cols
-                col_widths[-1] += (avail_w - sum(col_widths))  # remainder to last col
+                col_widths[-1] += (avail_w - sum(col_widths))
 
                 def draw_header(y: int) -> int:
                     x = left
@@ -406,9 +410,12 @@ class exporting:
             # ----------------------------
             # Collect image sources (robust)
             # ----------------------------
-            # IMPORTANT: if your model stores relative filenames, base_dir must point to the folder.
-            base = Path(base_dir) if base_dir else Path(
-                r"D:\Work\Imprest_Management\Imprest_Management_Forked\image_records")
+            # Determine base directory
+            if base_dir is None:
+                # Default fallback (change this to your actual default or keep None to force absolute)
+                base = Path(r"D:\Work\Imprest_Management\Imprest_Management_Forked\image_records")
+            else:
+                base = Path(base_dir)
 
             sources = []
 
@@ -421,7 +428,6 @@ class exporting:
                     if not v:
                         v = model.data(idx, Qt.ItemDataRole.EditRole)
                     if not v:
-                        # many models store file path in UserRole
                         v = model.data(idx, Qt.ItemDataRole.UserRole)
                     sources.extend(_flatten(v))
 
@@ -506,7 +512,6 @@ class exporting:
 
         finally:
             painter.end()
-
 
     def export_tableview_to_excel(self, view) -> None:
         model = view.model()

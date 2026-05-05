@@ -22,6 +22,6 @@ class MainWindow(QDialog):
 
         result = self.logic.login(username, password)
         if not result.ok:
-            QMessageBox.warning(self, "Login", result.error_message)
+            QMessageBox.warning(None, "Login Error", result.error_message)
             return
         self.nav.main_window_navigator(self)
