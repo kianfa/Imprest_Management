@@ -5,6 +5,7 @@ from PyQt6.uic import loadUi
 from app.data.data_base import Load_Save_Data
 from app.controller.logic import receipt_entry_logic
 from app.controller.navigator import Navigator
+import re
 
 
 
@@ -49,33 +50,39 @@ class Expense_Receipt_Entry(QWidget):
 
     def save_record(self) -> None:
         if self.UI.leInvoiceNumber.text() != "":
-            if self.logic.duplicate_check(self.UI.leInvoiceNumber.text().strip()):
-                if self.UI.leExpense.text() != "":
-                    if self.UI.cbExpenseCenter.currentIndex() != -1:
-                        if self.UI.cbCompany.currentIndex() != -1:
-                            if self.UI.cbExpenseType.currentIndex() != -1:
-                                data = {
-                                    "Invoice NO": self.UI.leInvoiceNumber.text(),
-                                    "explanation": self.UI.teExplanation.toPlainText(),
-                                    "amount": self.UI.leExpense.text(),
-                                    "record_date": self.UI.deDate.date().toString("yyyy-MM-dd"),
-                                    "image_paths": "|".join(self.logic.selected_image_paths),
-                                    "expense_center": self.UI.cbExpenseCenter.currentText(),
-                                    "expense_type": self.UI.cbExpenseType.currentText(),
-                                    "company_name": self.UI.cbCompany.currentText(),
-                                    "source_pc": "PC-1"
-                                }
-                                Load_Save_Data().save_data(data)
-                                self.open_dashboard()
+            if re.fullmatch(r"^[0-9]*$", self.UI.leInvoiceNumber.text()):
+                if self.logic.duplicate_check(self.UI.leInvoiceNumber.text().strip()):
+                    if self.UI.leExpense.text() != "":
+                        if re.fullmatch(r"^[0-9]*$", self.UI.leExpense.text()):
+                            if self.UI.cbExpenseCenter.currentIndex() != -1:
+                                if self.UI.cbCompany.currentIndex() != -1:
+                                    if self.UI.cbExpenseType.currentIndex() != -1:
+                                        data = {
+                                            "Invoice NO": self.UI.leInvoiceNumber.text(),
+                                            "explanation": self.UI.teExplanation.toPlainText(),
+                                            "amount": self.UI.leExpense.text(),
+                                            "record_date": self.UI.deDate.date().toString("yyyy-MM-dd"),
+                                            "image_paths": "|".join(self.logic.selected_image_paths),
+                                            "expense_center": self.UI.cbExpenseCenter.currentText(),
+                                            "expense_type": self.UI.cbExpenseType.currentText(),
+                                            "company_name": self.UI.cbCompany.currentText(),
+                                            "source_pc": "PC-1"
+                                        }
+                                        Load_Save_Data().save_data(data)
+                                        self.open_dashboard()
+                                    else:
+                                        self.logic.show_field_error("Expense Type")
+                                else:
+                                    self.logic.show_field_error("Company")
                             else:
-                                self.logic.show_field_error("Expense Type")
+                                self.logic.show_field_error("Expense Center")
                         else:
-                            self.logic.show_field_error("Company")
+                            self.logic.show_wrong_type_error("Amount")
                     else:
-                        self.logic.show_field_error("Expense Center")
+                        self.logic.show_field_error("Amount")
                 else:
-                    self.logic.show_field_error("Amount")
+                    self.logic.show_duplicate_error("Invoice No")
             else:
-                self.logic.show_duplicate_error("Invoice No")
+                self.logic.show_wrong_type_error("Invoice No")
         else:
             self.logic.show_field_error("Invoice No")

@@ -170,6 +170,9 @@ class receipt_entry_logic:
         QMessageBox.warning(None, "Duplicate Invoice",
                             f"'{invoice_number}' already exists.\nPlease use a unique invoice number.")
 
+    def show_wrong_type_error(self, field_name) -> None:
+        QMessageBox.warning(None, "Wrong Type", f"Field '{field_name}' is not a number.")
+
     def duplicate_check(self, invoice) -> bool:
         db = Load_Save_Data()
         if db.invoice_exists(invoice):
