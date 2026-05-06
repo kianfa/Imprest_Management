@@ -1,8 +1,8 @@
 import sqlite3
+import bcrypt
+import uuid
 from pathlib import Path
 from datetime import datetime
-import uuid
-from typing import Optional
 
 
 class Load_Save_Data:
@@ -111,64 +111,162 @@ class Load_Save_Data:
 
 class DataBase:
     DB_PATH = Path(__file__).parent / "app.db"
-    def __init__(self) -> None:
-        pass
-
 
     @classmethod
-    def get_connection(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.DB_PATH)
-
+    def get_connection(cls) -> sqlite3.Connection:
+        return sqlite3.connect(cls.DB_PATH)
 
     @classmethod
-    def create_tables(self) -> None:
+    def create_tables(cls) -> None:
         query = """ CREATE TABLE IF NOT EXISTS records
-                        (
-                            id TEXT PRIMARY KEY,
-                            Invoice_NO TEXT NOT NULL,
-                            explanation TEXT, amount REAL,
-                            record_date TEXT,
-                            image_path TEXT,
-                            last_modified TEXT NOT NULL,
-                            source_pc TEXT NOT NULL,
-                            deleted INTEGER DEFAULT
-                            0
-                        ) """
-        conn= self.get_connection()
+                    (
+                        id \
+                        TEXT \
+                        PRIMARY \
+                        KEY,
+                        Invoice_NO \
+                        TEXT \
+                        NOT \
+                        NULL,
+                        explanation \
+                        TEXT, \
+                        amount \
+                        REAL,
+                        record_date \
+                        TEXT,
+                        image_path \
+                        TEXT,
+                        last_modified \
+                        TEXT \
+                        NOT \
+                        NULL,
+                        source_pc \
+                        TEXT \
+                        NOT \
+                        NULL,
+                        deleted \
+                        INTEGER \
+                        DEFAULT \
+                        0,
+                        expense_center \
+                        TEXT,
+                        expense_type \
+                        TEXT,
+                        company_name \
+                        TEXT
+                    ) """
+        conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute(query)
+
+        # Create users table (if not exists)
+        cur.execute('''CREATE TABLE IF NOT EXISTS users
+        (
+            id
+            INTEGER
+            PRIMARY
+            KEY
+            AUTOINCREMENT,
+            username
+            TEXT
+            UNIQUE
+            NOT
+            NULL,
+            hashed_password
+            TEXT
+            NOT
+            NULL,
+            role
+            TEXT
+            NOT
+            NULL
+            CHECK (
+            role
+            IN
+                       (
+            'admin',
+            'user'
+                       )),
+            full_name TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )''')
+
         conn.commit()
         conn.close()
 
+    # ========== USER AUTHENTICATION METHODS ==========
+
+    @classmethod
+    def create_default_users(cls) -> None:
+        conn = cls.get_connection()
+        cur = conn.cursor()
+
+        users = [
+            ('1', 'q', 'admin', 'Nozhan Ghayati'),
+            ('admin2', 'SecurePass456', 'admin', 'Bob Admin'),
+            ('user1', 'user111', 'user', 'Charlie User'),
+            ('user2', 'user222', 'user', 'Diana User'),
+            ('user3', 'user333', 'user', 'Eve User'),
+            ('user4', 'user444', 'user', 'Frank User'),
+            ('user5', 'user555', 'user', 'Grace User'),
+        ]
+
+        for username, plain_pw, role, full_name in users:
+            hashed = bcrypt.hashpw(plain_pw.encode(), bcrypt.gensalt())
+            try:
+                cur.execute('''
+                            INSERT INTO users (username, hashed_password, role, full_name)
+                            VALUES (?, ?, ?, ?)
+                            ''', (username, hashed, role, full_name))
+            except sqlite3.IntegrityError:
+                continue
+
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def verify_login(cls, username: str, password: str) -> tuple[bool, str]:
+        """
+        Returns (success, role)
+        success: True if password matches, else False
+        role: 'admin' or 'user' (empty string if login fails)
+        """
+        conn = cls.get_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT hashed_password, role FROM users WHERE username = ?', (username,))
+        row = cur.fetchone()
+        conn.close()
+
+        if row and bcrypt.checkpw(password.encode(), row[0]):
+            return True, row[1]
+        return False, ""
+
+    @classmethod
+    def get_user_role(cls, username: str) -> str:
+        """Return role ('admin' / 'user') or empty string if user not found."""
+        conn = cls.get_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT role FROM users WHERE username = ?', (username,))
+        row = cur.fetchone()
+        conn.close()
+        return row[0] if row else ""
 
 
-    def insert_record(self,Invoice_NO, explanation, amount, record_date, image_path, source_pc, expense_center, expense_type,company_name) -> str:
-        conn = self.get_connection()
+    @classmethod
+    def insert_record(cls, Invoice_NO, explanation, amount, record_date,
+                      image_path, source_pc, expense_center, expense_type, company_name) -> str:
+        conn = cls.get_connection()
         cur = conn.cursor()
         record_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         cur.execute("""
-        INSERT INTO records (
-            id, Invoice_NO, explanation, amount,
-            record_date, image_path,
-            last_modified, source_pc, expense_center, expense_type, company_name
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ? )
-        """, (
-            record_id,
-            Invoice_NO,
-            explanation,
-            amount,
-            record_date,
-            image_path,
-            now,
-            source_pc,
-            expense_center,
-            expense_type,
-            company_name
-        ))
-
+                    INSERT INTO records (id, Invoice_NO, explanation, amount, record_date, image_path,
+                                         last_modified, source_pc, expense_center, expense_type, company_name)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (record_id, Invoice_NO, explanation, amount, record_date, image_path,
+                          now, source_pc, expense_center, expense_type, company_name))
         conn.commit()
+        conn.close()
         return record_id
 
 
@@ -177,7 +275,7 @@ from pathlib import Path
 import shutil
 
 class ImageStore:
-    BASE_DIR = Path(r"D:\Work\Imprest_Management\Imprest_Management_Forked\image_records")
+    BASE_DIR = Path(r"./")
     BASE_DIR.mkdir(parents=True, exist_ok=True)
 
     #Making new folder

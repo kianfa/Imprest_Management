@@ -9,6 +9,7 @@ from app.data.data_base import DataBase
 
 def main() -> None:
     DataBase.create_tables()
+    DataBase.create_default_users()
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

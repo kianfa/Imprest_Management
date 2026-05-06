@@ -179,21 +179,36 @@ class receipt_entry_logic:
             return False
         return True
 
+from app.data.data_base import DataBase
 
 @dataclass
 class LoginResult:
     ok: bool
+    role: str = ""
     error_message: str = ""
+
 class main_window_logic:
-    def validate_inputs(self, username: str, password: str) -> LoginResult:
+    @staticmethod
+    def validate_inputs(username: str, password: str) -> LoginResult:
         if not username:
-            return LoginResult(False, "Username is empty")
+            return LoginResult(False, error_message="Username cannot be empty.")
         if not password:
-            return LoginResult(False, "Password is empty")
+            return LoginResult(False, error_message="Password cannot be empty.")
         return LoginResult(True)
 
-    def login(self, username: str, password: str) -> LoginResult:
-        return self.validate_inputs(username, password)
+    @classmethod
+    def login(cls, username: str, password: str) -> LoginResult:
+        # Step 1: validate input
+        validation = cls.validate_inputs(username, password)
+        if not validation.ok:
+            return validation
+
+        # Step 2: verify against database
+        success, role = DataBase.verify_login(username, password)
+        if success:
+            return LoginResult(True, role=role)
+        else:
+            return LoginResult(False, error_message="Incorrect username or password.")
 
 
 
