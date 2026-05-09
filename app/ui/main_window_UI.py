@@ -28,9 +28,16 @@ class MainWindow(QDialog):
         result = main_window_logic.login(username, password)  # call class method
         if result.ok:
             self.success = True
-            self.username = username
-            self.role = result.role
+            UserSession.username = username
+            UserSession.full_name = str(username)
+            UserSession.role = str(result.role)
             self.accept()
             self.nav.main_window_navigator(self)
         else:
             QMessageBox.critical(None, "Warning", result.error_message)
+
+
+class UserSession:
+    username = ""
+    full_name = ""
+    role = ""

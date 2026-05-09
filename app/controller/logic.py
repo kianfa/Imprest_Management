@@ -206,7 +206,7 @@ class main_window_logic:
         # Step 2: verify against database
         success, role = DataBase.verify_login(username, password)
         if success:
-            return LoginResult(True, role=role)
+            return LoginResult(True, role)
         else:
             return LoginResult(False, error_message="Incorrect username or password.")
 

@@ -2,9 +2,10 @@ import sys
 from pathlib import Path
 from PyQt6.QtWidgets import QWidget
 from PyQt6.uic import loadUi
-from app.data.data_base import Load_Save_Data
+from app.data.data_base import Load_Save_Data, DataBase
 from app.controller.logic import receipt_entry_logic
 from app.controller.navigator import Navigator
+from app.ui.main_window_UI import UserSession
 import re
 
 
@@ -49,6 +50,7 @@ class Expense_Receipt_Entry(QWidget):
         self.nav.expense_entry_page_navigator(self)
 
     def save_record(self) -> None:
+        current_user = UserSession.username
         if self.UI.leInvoiceNumber.text() != "":
             if re.fullmatch(r"^[0-9]*$", self.UI.leInvoiceNumber.text()):
                 if self.logic.duplicate_check(self.UI.leInvoiceNumber.text().strip()):
@@ -66,9 +68,11 @@ class Expense_Receipt_Entry(QWidget):
                                             "expense_center": self.UI.cbExpenseCenter.currentText(),
                                             "expense_type": self.UI.cbExpenseType.currentText(),
                                             "company_name": self.UI.cbCompany.currentText(),
-                                            "source_pc": "PC-1"
+                                            "source_pc": "PC-1",
+                                            "created_by": DataBase.get_user_full_name(current_user)
                                         }
-                                        Load_Save_Data().save_data(data)
+                                        full_name = DataBase.get_user_full_name(current_user)
+                                        Load_Save_Data().save_data(data, full_name)
                                         self.open_dashboard()
                                     else:
                                         self.logic.show_field_error("Expense Type")

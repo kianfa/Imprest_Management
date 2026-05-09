@@ -20,7 +20,7 @@ class Calling_Page(QWidget):
         self.nav = Navigator()
 
         self.headers = ["Invoice NO", "explanation", "record_date", "amount",
-                        "expense_center", "expense_type", "company_name"]
+                        "expense_center", "expense_type", "company_name","created_by "]
         self.model = QStandardItemModel(self)
         self.model.setColumnCount(len(self.headers))
         self.model.setHorizontalHeaderLabels(self.headers)

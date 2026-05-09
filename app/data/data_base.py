@@ -29,7 +29,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_Invoice_NO(self, Invoice_NO) -> list[tuple]:
         query="""
-            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
+            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE Invoice_NO LIKE ?
         """
@@ -39,7 +39,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_explanation(self, explanation) -> list[tuple]:
         query="""
-            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
+            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE explanation LIKE ?
         """
@@ -49,7 +49,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_regestrationdate(self, regestrationdate) -> list[tuple]:
         query="""
-            SELECT Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name
+            SELECT Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
             FROM records
             WHERE record_date = ?
         """
@@ -59,7 +59,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_time_range(self, startdate,enddate) -> list[tuple]:
         query="""
-        SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name
+        SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
         FROM records
         WHERE record_date >= ? AND record_date <= ?
         """
@@ -72,7 +72,7 @@ class Load_Save_Data:
 
 
     @staticmethod
-    def save_data(data: dict) -> None:
+    def save_data(data: dict, created_by:str) -> None:
         id: int = DataBase().insert_record(
             Invoice_NO=data["Invoice NO"],
             explanation=data["explanation"],
@@ -82,7 +82,8 @@ class Load_Save_Data:
             source_pc=data["source_pc"],
             expense_center=data["expense_center"],
             expense_type=data["expense_type"],
-            company_name=data["company_name"]
+            company_name=data["company_name"],
+            created_by = created_by
         )
         img:list[str] = Load_Save_Data().get_image_paths_by_id(id)
         ImageStore.copy_images_into_record_folder(id, img)
@@ -118,79 +119,41 @@ class DataBase:
 
     @classmethod
     def create_tables(cls) -> None:
-        query = """ CREATE TABLE IF NOT EXISTS records
-                    (
-                        id \
-                        TEXT \
-                        PRIMARY \
-                        KEY,
-                        Invoice_NO \
-                        TEXT \
-                        NOT \
-                        NULL,
-                        explanation \
-                        TEXT, \
-                        amount \
-                        REAL,
-                        record_date \
-                        TEXT,
-                        image_path \
-                        TEXT,
-                        last_modified \
-                        TEXT \
-                        NOT \
-                        NULL,
-                        source_pc \
-                        TEXT \
-                        NOT \
-                        NULL,
-                        deleted \
-                        INTEGER \
-                        DEFAULT \
-                        0,
-                        expense_center \
-                        TEXT,
-                        expense_type \
-                        TEXT,
-                        company_name \
-                        TEXT
-                    ) """
+        query = """
+                CREATE TABLE IF NOT EXISTS records (
+                    id TEXT PRIMARY KEY,
+                    Invoice_NO TEXT NOT NULL,
+                    explanation TEXT,
+                    amount REAL,
+                    record_date TEXT, 
+                    image_path TEXT,
+                    last_modified TEXT NOT NULL,
+                    source_pc TEXT NOT NULL,
+                    deleted INTEGER DEFAULT 0,
+                    expense_center TEXT,
+                    expense_type TEXT,
+                    company_name TEXT,
+                    created_by TEXT
+                )
+                """
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute(query)
+        conn.commit()
 
         # Create users table (if not exists)
-        cur.execute('''CREATE TABLE IF NOT EXISTS users
-        (
-            id
-            INTEGER
-            PRIMARY
-            KEY
-            AUTOINCREMENT,
-            username
-            TEXT
-            UNIQUE
-            NOT
-            NULL,
-            hashed_password
-            TEXT
-            NOT
-            NULL,
-            role
-            TEXT
-            NOT
-            NULL
-            CHECK (
-            role
-            IN
-                       (
-            'admin',
-            'user'
-                       )),
-            full_name TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )''')
-
+        cur.execute(
+            '''CREATE TABLE IF NOT EXISTS users
+                (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                hashed_password TEXT NOT NULL,
+                role TEXT NOT NULL CHECK (role IN ('admin','user')),
+                full_name TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            '''
+        )
         conn.commit()
         conn.close()
 
@@ -253,22 +216,32 @@ class DataBase:
 
 
     @classmethod
-    def insert_record(cls, Invoice_NO, explanation, amount, record_date,
-                      image_path, source_pc, expense_center, expense_type, company_name) -> str:
+    def get_user_full_name(cls, username: str) -> str:
         conn = cls.get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT full_name FROM users WHERE username = ?", (username,))
+        row = cur.fetchone()
+        conn.close()
+        return row[0] if row and row[0] else username
+
+
+    @classmethod
+    def insert_record(self, Invoice_NO, explanation, amount, record_date,
+                      image_path, source_pc, expense_center, expense_type,
+                      company_name, created_by) -> str:  # new parameter
+        conn = self.get_connection()
         cur = conn.cursor()
         record_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         cur.execute("""
                     INSERT INTO records (id, Invoice_NO, explanation, amount, record_date, image_path,
-                                         last_modified, source_pc, expense_center, expense_type, company_name)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                         last_modified, source_pc, expense_center, expense_type, company_name,
+                                         created_by)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (record_id, Invoice_NO, explanation, amount, record_date, image_path,
-                          now, source_pc, expense_center, expense_type, company_name))
+                          now, source_pc, expense_center, expense_type, company_name, created_by))
         conn.commit()
-        conn.close()
         return record_id
-
 
 
 from pathlib import Path
