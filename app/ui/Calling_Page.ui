@@ -399,9 +399,54 @@ QHeaderView::section {
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
+      <widget class="QPushButton" name="btnEditRecord">
+       <property name="text">
+        <string>Edit Record</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDeleteRecord">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: transparent;
+    color: #FF9800;
+    font-weight: bold;
+    border: 2px solid #FF9800;
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-height: 40px;
+}
+
+QPushButton:hover {
+    background-color: #232323;
+}
+
+QPushButton:pressed {
+    background-color: #2B2B2B;
+}
+</string>
+       </property>
+       <property name="text">
+        <string>Delete Record</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
       <widget class="QPushButton" name="btnCancel">
        <property name="text">
         <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSaveasPDF">
+       <property name="text">
+        <string>Save as PDF</string>
        </property>
       </widget>
      </item>
@@ -429,13 +474,6 @@ QPushButton:pressed {
        </property>
        <property name="text">
         <string>Save as excel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnSaveasPDF">
-       <property name="text">
-        <string>Save as PDF</string>
        </property>
       </widget>
      </item>
