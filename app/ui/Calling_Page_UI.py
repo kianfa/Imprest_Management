@@ -83,7 +83,7 @@ class Calling_Page(QWidget):
                                                                            self.UI.deLoginStart, self.UI.deLoginEnd,
                                                                            self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation))
         self.UI.btnEditRecord.clicked.connect(self.edit_record)
-        #self.UI.btnDeleteRecord.clicked.connect(self.delete_record)
+        self.UI.btnDeleteRecord.clicked.connect(self.delete_record)
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
         self.UI.btnSaveasPDF.clicked.connect(self.on_save_pdf_clicked)
         self.UI.btnSaveasexcel.clicked.connect(self.on_save_excel_clicked)
@@ -106,6 +106,13 @@ class Calling_Page(QWidget):
     def edit_record(self) -> None:
         self.logic.edit_record(self.UI.tableView)
         # Refresh the table
+        self.logic.load_invoices(self.UI.rbInvoiceNo, self.UI.rbTimeRange, self.UI.leInvoiceNo,
+                                 self.UI.deLoginStart, self.UI.deLoginEnd,
+                                 self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)
+
+    def delete_record(self) -> None:
+        self.logic.delete_record(self.UI.tableView)
+        #Refresh the table
         self.logic.load_invoices(self.UI.rbInvoiceNo, self.UI.rbTimeRange, self.UI.leInvoiceNo,
                                  self.UI.deLoginStart, self.UI.deLoginEnd,
                                  self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)

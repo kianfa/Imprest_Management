@@ -287,6 +287,31 @@ class calling_page_logic:
             updated = dialog.get_updated_data()
             DataBase.update_record(record_id, updated)
 
+    def delete_record(self, table: QTableView) -> None:
+        # Get selected row
+        selected = table.selectedIndexes()
+        if not selected:
+            QMessageBox.warning(None, "No Selection", "Please select a record to delete.")
+            return
+
+        row = selected[0].row()
+        record_id = self.model.item(row, 0).text()
+        created_by = self.model.item(row, 8).text()
+
+        # Permission check
+        if UserSession.role != 'admin' and created_by != UserSession.full_name:
+            QMessageBox.warning(None, "Permission Denied", "You can only delete your own records.")
+            return
+
+        # Confirmation dialog
+        reply = QMessageBox.question(None, "Confirm Delete",
+                                     "Are you sure you want to delete this record?\nThis action cannot be undone.",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+        if reply == QMessageBox.StandardButton.Yes:
+            Load_Save_Data.soft_delete_record(record_id)
+            QMessageBox.information(None, "Deleted", "Record has been deleted.")
+
 
 
 

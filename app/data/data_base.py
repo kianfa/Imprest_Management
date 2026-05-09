@@ -33,6 +33,7 @@ class Load_Save_Data:
                     SELECT Invoice_NO, explanation, amount, record_date, image_path, expense_center, expense_type, company_name, created_by
                     FROM records
                     WHERE id = ?
+                    AND deleted = 0
                 """, (record_id,))
         row = cur.fetchone()
         conn.close()
@@ -57,6 +58,7 @@ class Load_Save_Data:
             SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE Invoice_NO LIKE ?
+            AND deleted = 0
         """
         return self.fetch_all(query,(Invoice_NO,))
 
@@ -67,6 +69,7 @@ class Load_Save_Data:
             SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE explanation LIKE ?
+            AND deleted = 0
         """
         return self.fetch_all(query,(f"%{explanation}%",))
 
@@ -77,6 +80,7 @@ class Load_Save_Data:
             SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
             FROM records
             WHERE record_date = ?
+            AND deleted = 0
         """
         return self.fetch_all(query,(regestrationdate,))
 
@@ -87,6 +91,7 @@ class Load_Save_Data:
         SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
         FROM records
         WHERE record_date >= ? AND record_date <= ?
+        AND deleted = 0
         """
         conn = self.get_connection()
         cur = conn.cursor()
@@ -133,6 +138,14 @@ class Load_Save_Data:
         conn.close()
         return exists
 
+    @classmethod
+    def soft_delete_record(cls, record_id: str) -> None:
+        conn = cls.get_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE records SET deleted = 1 WHERE id = ?", (record_id,))
+        conn.commit()
+        conn.close()
+
 
 
 class UserSession:
@@ -171,6 +184,11 @@ class DataBase:
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute(query)
+        # Add 'deleted' column if not exists (SQLite doesn't have IF NOT EXISTS for columns)
+        try:
+            cur.execute("ALTER TABLE records ADD COLUMN deleted INTEGER DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass  # column already exists
         conn.commit()
 
         # Create users table (if not exists)
