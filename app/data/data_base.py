@@ -26,10 +26,35 @@ class Load_Save_Data:
         return rows
 
 
+    def get_record_by_id(self, record_id):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+                    SELECT Invoice_NO, explanation, amount, record_date, image_path, expense_center, expense_type, company_name, created_by
+                    FROM records
+                    WHERE id = ?
+                """, (record_id,))
+        row = cur.fetchone()
+        conn.close()
+        if row:
+            return {
+                "Invoice_NO": row[0],
+                "explanation": row[1],
+                "amount": row[2],
+                "record_date": row[3],
+                "image_path": row[4],
+                "expense_center": row[5],
+                "expense_type": row[6],
+                "company_name": row[7],
+                "created_by": row[8]
+            }
+        return None
+
+
     @classmethod
     def get_invoices_by_Invoice_NO(self, Invoice_NO) -> list[tuple]:
         query="""
-            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+            SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE Invoice_NO LIKE ?
         """
@@ -39,7 +64,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_explanation(self, explanation) -> list[tuple]:
         query="""
-            SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+            SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE explanation LIKE ?
         """
@@ -49,7 +74,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_regestrationdate(self, regestrationdate) -> list[tuple]:
         query="""
-            SELECT Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
+            SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
             FROM records
             WHERE record_date = ?
         """
@@ -59,7 +84,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_time_range(self, startdate,enddate) -> list[tuple]:
         query="""
-        SELECT Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+        SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
         FROM records
         WHERE record_date >= ? AND record_date <= ?
         """
@@ -107,6 +132,13 @@ class Load_Save_Data:
         exists = cur.fetchone() is not None
         conn.close()
         return exists
+
+
+
+class UserSession:
+    username = ""
+    full_name = ""
+    role = ""
 
 
 
@@ -200,6 +232,10 @@ class DataBase:
         row = cur.fetchone()
         conn.close()
 
+        UserSession.username = username
+        UserSession.full_name = DataBase.get_user_full_name(username)
+        UserSession.role = DataBase.get_user_role(username)
+
         if row and bcrypt.checkpw(password.encode(), row[0]):
             return True, row[1]
         return False, ""
@@ -242,6 +278,37 @@ class DataBase:
                           now, source_pc, expense_center, expense_type, company_name, created_by))
         conn.commit()
         return record_id
+
+
+    @classmethod
+    def update_record(cls, record_id: str, updated_data: dict) -> None:
+        conn = cls.get_connection()
+        cur = conn.cursor()
+        now = datetime.utcnow().isoformat()
+        cur.execute("""
+                    UPDATE records
+                    SET Invoice_NO     = ?,
+                        explanation    = ?,
+                        amount         = ?,
+                        record_date    = ?,
+                        expense_center = ?,
+                        expense_type   = ?,
+                        company_name   = ?,
+                        last_modified  = ?
+                    WHERE id = ?
+                    """, (
+                        updated_data["Invoice_NO"],
+                        updated_data["explanation"],
+                        updated_data["amount"],
+                        updated_data["record_date"],
+                        updated_data["expense_center"],
+                        updated_data["expense_type"],
+                        updated_data["company_name"],
+                        now,
+                        record_id
+                    ))
+        conn.commit()
+        conn.close()
 
 
 from pathlib import Path

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from app.data.data_base import Load_Save_Data
+from app.data.data_base import Load_Save_Data,UserSession
 from PyQt6.QtGui import QStandardItem
 from PyQt6.QtWidgets import (
-    QFileDialog, QRadioButton, QDateEdit, QLineEdit
+    QFileDialog, QRadioButton, QDateEdit, QLineEdit, QTableView
 )
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
@@ -14,6 +14,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtGui import QAction, QIcon
+from app.ui.edit_record_dialog import EditRecordDialog
 
 
 
@@ -26,7 +27,6 @@ class receipt_entry_logic:
         self.selected_image_paths = []
 
     def enhance_combo(self, combo: QComboBox, settings_key: str, default_items=None) -> None:
-        """Add '+' item and right‑click removal to an existing QComboBox."""
         if default_items is None:
             default_items = []
 
@@ -241,12 +241,51 @@ class calling_page_logic:
         self.model.clear()
         self.model.setColumnCount(len(self.headers))
         self.model.setHorizontalHeaderLabels([""] * len(self.headers))
-        self.model.appendRow([QStandardItem(h) for h in self.headers])
 
-        # Fill DB rows cell-by-cell
+        # Header row (first row in the model)
+        header_items = []
+        for h in self.headers:
+            item = QStandardItem(h)
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            header_items.append(item)
+        self.model.appendRow(header_items)
+
+        # Data rows
         for row in rows:
-            items = [QStandardItem("" if v is None else str(v)) for v in row]
+            items = []
+            for v in row:
+                item = QStandardItem("" if v is None else str(v))
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                items.append(item)
             self.model.appendRow(items)
+
+        # Hide id column (column 0)
+        self.tableView.setColumnHidden(0, True)
+
+
+    def edit_record(self, table: QTableView) -> None:
+        selected = table.selectedIndexes()
+        if not selected:
+            QMessageBox.warning(None, "No Selection", "Please select a record to edit.")
+            return
+
+        row = selected[0].row()
+        record_id = self.model.item(row, 0).text()
+        created_by = self.model.item(row, 8).text()
+
+        if UserSession.role != 'admin' and created_by != UserSession.full_name:
+            QMessageBox.warning(None, "Permission Denied", "You can only edit your own records.")
+            return
+
+        record_data = Load_Save_Data().get_record_by_id(record_id)
+        if not record_data:
+            QMessageBox.critical(None, "Error", "Record not found.")
+            return
+
+        dialog = EditRecordDialog(record_data)
+        if dialog.exec():
+            updated = dialog.get_updated_data()
+            DataBase.update_record(record_id, updated)
 
 
 

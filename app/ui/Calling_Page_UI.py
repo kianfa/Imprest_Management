@@ -2,12 +2,11 @@ from PyQt6.QtCore import QDate
 from PyQt6.uic import loadUi
 from pathlib import Path
 from app.controller.logic import calling_page_logic, exporting
-from app.data.data_base import Load_Save_Data
+from app.data.data_base import Load_Save_Data, UserSession
 from app.controller.navigator import Navigator
 from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtWidgets import QWidget, QFileDialog
-
-
+from PyQt6.QtWidgets import QAbstractItemView
 
 class Calling_Page(QWidget):
     def __init__(self) -> None:
@@ -18,14 +17,20 @@ class Calling_Page(QWidget):
         self.UI = loadUi(ui_path, self)
 
         self.nav = Navigator()
+        self.us = UserSession()
 
-        self.headers = ["Invoice NO", "explanation", "record_date", "amount",
+        self.current_full_name = self.us.full_name
+        self.current_role = self.us.role
+
+        self.headers = ["id", "Invoice NO", "explanation", "record_date", "amount",
                         "expense_center", "expense_type", "company_name","created_by "]
         self.model = QStandardItemModel(self)
         self.model.setColumnCount(len(self.headers))
         self.model.setHorizontalHeaderLabels(self.headers)
 
         self.UI.tableView.setModel(self.model)
+        self.UI.tableView.setModel(self.model)
+        self.UI.tableView.horizontalHeader().setDefaultSectionSize(122)
         self.UI.tableView.horizontalHeader().setVisible(False)
         self.UI.tableView.verticalHeader().setVisible(False)  # removes row numbers + corner block
         self.UI.tableView.setCornerButtonEnabled(False)  # extra safety
@@ -61,6 +66,9 @@ class Calling_Page(QWidget):
 
         #loading data
         self.logic.tableView = self.UI.tableView
+        # Enable row selection on the table view
+        self.UI.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.UI.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
 
         self.logic.rbTimeRange = self.UI.rbTimeRange
         self.logic.rbRegistrationDate = self.UI.rbRegistrationDate
@@ -74,6 +82,8 @@ class Calling_Page(QWidget):
         self.UI.btnSearch.clicked.connect(lambda :self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.rbTimeRange,self.UI.leInvoiceNo,
                                                                            self.UI.deLoginStart, self.UI.deLoginEnd,
                                                                            self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation))
+        self.UI.btnEditRecord.clicked.connect(self.edit_record)
+        #self.UI.btnDeleteRecord.clicked.connect(self.delete_record)
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
         self.UI.btnSaveasPDF.clicked.connect(self.on_save_pdf_clicked)
         self.UI.btnSaveasexcel.clicked.connect(self.on_save_excel_clicked)
@@ -92,3 +102,10 @@ class Calling_Page(QWidget):
 
     def on_save_excel_clicked(self) -> None:
         self.export.export_tableview_to_excel(self.UI.tableView)
+
+    def edit_record(self) -> None:
+        self.logic.edit_record(self.UI.tableView)
+        # Refresh the table
+        self.logic.load_invoices(self.UI.rbInvoiceNo, self.UI.rbTimeRange, self.UI.leInvoiceNo,
+                                 self.UI.deLoginStart, self.UI.deLoginEnd,
+                                 self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)
