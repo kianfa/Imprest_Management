@@ -98,7 +98,7 @@ class Calling_Page(QWidget):
     def on_save_pdf_clicked(self) -> None:
         path, _ = QFileDialog.getSaveFileName(self, "Save PDF", "results.pdf", "PDF (*.pdf)")
         if path:
-            self.export.export_tableview_to_pdf(table=self.UI.tableView, filename=path)
+            self.export.export_table_to_pdf(table=self.UI.tableView, file_path=path)
 
     def on_save_excel_clicked(self) -> None:
         self.export.export_tableview_to_excel(self.UI.tableView)
