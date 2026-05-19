@@ -1,10 +1,13 @@
 from __future__ import annotations
+
+import os
 from dataclasses import dataclass
+from email.headerregistry import Address
 
 from openpyxl.utils import rows_from_range
 
 from app.data.data_base import Load_Save_Data,UserSession
-from PyQt6.QtGui import QStandardItem
+from PyQt6.QtGui import QStandardItem, QImage
 from PyQt6.QtWidgets import (
     QFileDialog, QRadioButton, QDateEdit, QLineEdit, QTableView
 )
@@ -41,8 +44,7 @@ from PyQt6.QtCore import (
     QEventLoop
 )
 
-import ast
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 PathLike = Union[str, Path]
@@ -619,12 +621,9 @@ class exporting:
     from PyQt6.QtCore import QMarginsF
 
     def export_table_to_pdf(self, table, file_path):
-
-        #
         # Create hidden export view
-        #
-
         export_view = QTableView()
+        model = table.model()
 
         #
         # Reuse SAME model
@@ -691,13 +690,13 @@ class exporting:
         export_view.setFixedHeight(
             export_view.horizontalHeader().height()
             + export_view.verticalHeader().length()
-            + 2
+            + 4
         )
 
         export_view.setFixedWidth(
             export_view.verticalHeader().width()
             + export_view.horizontalHeader().length()
-            + 2
+            + 4
         )
 
         QApplication.processEvents(
@@ -764,11 +763,25 @@ class exporting:
             QApplication.processEvents(
                 QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents
             )
-
             #
-            # Render
-            #
+            # image
+            index = model.index(row, 0)
 
+            id = str(model.data(index)).strip()
+            images_path = BASE_DIR / "image_records" / id
+
+            image_files=[]
+            for file in os.listdir(images_path):
+                if file.lower().endswith((
+                        ".png",
+                        ".jpg",
+                        ".jpeg",
+                        ".bmp",
+                        ".webp"
+                )):
+                    image_files.append(file)
+
+            # render table
             painter.save()
 
             painter.scale(scale, scale)
@@ -776,6 +789,42 @@ class exporting:
             export_view.render(painter)
 
             painter.restore()
+
+            #
+            # Start images BELOW scaled table
+            #
+
+            table_height = export_view.height() * scale
+
+            x = 500
+            y = table_height
+
+            page_rect = printer.pageRect(
+                QPrinter.Unit.DevicePixel
+            )
+
+            page_height = page_rect.height()
+
+            for file in image_files:
+                full_path = images_path / file
+
+                image = QImage(str(full_path))
+
+                scaled = image.scaled(
+                    7000,
+                    7000,
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation
+                )
+
+                if y + scaled.height() > page_height:
+                    printer.newPage()
+
+                    y = 500
+
+                painter.drawImage(x, y, scaled)
+
+                y += scaled.height() + 40
 
             #
             # Next page

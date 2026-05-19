@@ -333,7 +333,7 @@ from pathlib import Path
 import shutil
 
 class ImageStore:
-    BASE_DIR = Path(r"./")
+    BASE_DIR = Path(r"./image_records")
     BASE_DIR.mkdir(parents=True, exist_ok=True)
 
     #Making new folder
