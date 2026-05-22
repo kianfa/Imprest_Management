@@ -426,6 +426,8 @@ class exporting:
             QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents
         )
 
+        export_view.setColumnHidden(0, True)
+
         # PAGE 1 → FULL TABLE
         painter.save()
 
@@ -452,6 +454,7 @@ class exporting:
 
             # Show rows needed
             export_view.setRowHidden(0, False)
+            export_view.setColumnHidden(0, True)
             export_view.setRowHidden(row, False)
 
             export_view.setUpdatesEnabled(True)
