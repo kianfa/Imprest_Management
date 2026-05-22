@@ -237,6 +237,19 @@ QHeaderView::section {
          </widget>
         </item>
         <item>
+         <widget class="QRadioButton" name="rbProjectCode">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Search by Project Code</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QRadioButton" name="rbTimeRange">
           <property name="text">
            <string>Search by Time Range</string>
@@ -269,7 +282,7 @@ QHeaderView::section {
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="pgInvoiceNo">
         <layout class="QHBoxLayout" name="horizontalLayout">
@@ -334,6 +347,17 @@ QHeaderView::section {
            </property>
            <property name="placeholderText">
             <string>Invoice No</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page">
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLineEdit" name="leProjectCode">
+           <property name="placeholderText">
+            <string>Project Code</string>
            </property>
           </widget>
          </item>

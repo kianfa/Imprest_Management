@@ -30,7 +30,7 @@ class Load_Save_Data:
         conn = self.get_connection()
         cur = conn.cursor()
         cur.execute("""
-                    SELECT Invoice_NO, explanation, amount, record_date, image_path, expense_center, expense_type, company_name, created_by
+                    SELECT Invoice_NO, Project_Code, explanation, amount, record_date, image_path, expense_center, expense_type, company_name, created_by
                     FROM records
                     WHERE id = ?
                     AND deleted = 0
@@ -40,14 +40,15 @@ class Load_Save_Data:
         if row:
             return {
                 "Invoice_NO": row[0],
-                "explanation": row[1],
-                "amount": row[2],
-                "record_date": row[3],
-                "image_path": row[4],
-                "expense_center": row[5],
-                "expense_type": row[6],
-                "company_name": row[7],
-                "created_by": row[8]
+                "Project_Code": row[1],
+                "explanation": row[2],
+                "amount": row[3],
+                "record_date": row[4],
+                "image_path": row[5],
+                "expense_center": row[6],
+                "expense_type": row[7],
+                "company_name": row[8],
+                "created_by": row[9]
             }
         return None
 
@@ -55,18 +56,27 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_Invoice_NO(self, Invoice_NO) -> list[tuple]:
         query="""
-            SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE Invoice_NO LIKE ?
             AND deleted = 0
         """
         return self.fetch_all(query,(Invoice_NO,))
 
+    @classmethod
+    def get_invoices_by_Project_Code(self, Project_Code) -> list[tuple]:
+        query="""
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+            FROM records
+            WHERE Project_Code LIKE ?
+            AND deleted = 0
+        """
+        return self.fetch_all(query,(Project_Code,))
 
     @classmethod
     def get_invoices_by_explanation(self, explanation) -> list[tuple]:
         query="""
-            SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
             FROM records
             WHERE explanation LIKE ?
             AND deleted = 0
@@ -77,7 +87,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_regestrationdate(self, regestrationdate) -> list[tuple]:
         query="""
-            SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
             FROM records
             WHERE record_date = ?
             AND deleted = 0
@@ -88,7 +98,7 @@ class Load_Save_Data:
     @classmethod
     def get_invoices_by_time_range(self, startdate,enddate) -> list[tuple]:
         query="""
-        SELECT Id, Invoice_NO, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+        SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
         FROM records
         WHERE record_date >= ? AND record_date <= ?
         AND deleted = 0
@@ -105,6 +115,7 @@ class Load_Save_Data:
     def save_data(data: dict, created_by:str) -> None:
         id: int = DataBase().insert_record(
             Invoice_NO=data["Invoice NO"],
+            Project_Code=data["Project_Code"],
             explanation=data["explanation"],
             amount=float(data["amount"]),
             record_date=data["record_date"],
@@ -134,6 +145,14 @@ class Load_Save_Data:
         conn = self.get_connection()
         cur = conn.cursor()
         cur.execute("SELECT 1 FROM records WHERE Invoice_NO = ?", (invoice_number,))
+        exists = cur.fetchone() is not None
+        conn.close()
+        return exists
+
+    def project_exists(self, project_code: str) -> bool:
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM records WHERE Project_Code = ?", (project_code,))
         exists = cur.fetchone() is not None
         conn.close()
         return exists
@@ -168,6 +187,7 @@ class DataBase:
                 CREATE TABLE IF NOT EXISTS records (
                     id TEXT PRIMARY KEY,
                     Invoice_NO TEXT NOT NULL,
+                    Project_Code TEXT NOT NULL,
                     explanation TEXT,
                     amount REAL,
                     record_date TEXT, 
@@ -184,7 +204,6 @@ class DataBase:
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute(query)
-        # Add 'deleted' column if not exists (SQLite doesn't have IF NOT EXISTS for columns)
         try:
             cur.execute("ALTER TABLE records ADD COLUMN deleted INTEGER DEFAULT 0")
         except sqlite3.OperationalError:
@@ -280,7 +299,7 @@ class DataBase:
 
 
     @classmethod
-    def insert_record(self, Invoice_NO, explanation, amount, record_date,
+    def insert_record(self, Invoice_NO, Project_Code, explanation, amount, record_date,
                       image_path, source_pc, expense_center, expense_type,
                       company_name, created_by) -> str:  # new parameter
         conn = self.get_connection()
@@ -288,11 +307,11 @@ class DataBase:
         record_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         cur.execute("""
-                    INSERT INTO records (id, Invoice_NO, explanation, amount, record_date, image_path,
+                    INSERT INTO records (id, Invoice_NO, Project_Code, explanation, amount, record_date, image_path,
                                          last_modified, source_pc, expense_center, expense_type, company_name,
                                          created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (record_id, Invoice_NO, explanation, amount, record_date, image_path,
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (record_id, Invoice_NO, Project_Code, explanation, amount, record_date, image_path,
                           now, source_pc, expense_center, expense_type, company_name, created_by))
         conn.commit()
         return record_id
@@ -306,6 +325,7 @@ class DataBase:
         cur.execute("""
                     UPDATE records
                     SET Invoice_NO     = ?,
+                        Project_Code   = ?,
                         explanation    = ?,
                         amount         = ?,
                         record_date    = ?,
@@ -316,6 +336,7 @@ class DataBase:
                     WHERE id = ?
                     """, (
                         updated_data["Invoice_NO"],
+                        updated_data["Project_Code"],
                         updated_data["explanation"],
                         updated_data["amount"],
                         updated_data["record_date"],

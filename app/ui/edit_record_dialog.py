@@ -15,6 +15,7 @@ class EditRecordDialog(QDialog):
 
         # Editable fields
         self.invoice_no_edit = QLineEdit(str(record_data["Invoice_NO"]))
+        self.project_code_edit = QLineEdit(str(record_data["Project_Code"]))
         self.explanation_edit = QLineEdit(record_data["explanation"])
         self.amount_edit = QLineEdit(str(record_data["amount"]))
         self.date_edit = QDateEdit()
@@ -26,6 +27,7 @@ class EditRecordDialog(QDialog):
 
         # Combo boxes (populate as needed)
         form.addRow("Invoice No:", self.invoice_no_edit)
+        form.addRow("Project Code:", self.project_code_edit)
         form.addRow("Explanation:", self.explanation_edit)
         form.addRow("Amount:", self.amount_edit)
         form.addRow("Record Date:", self.date_edit)
@@ -43,6 +45,7 @@ class EditRecordDialog(QDialog):
     def get_updated_data(self):
         return {
             "Invoice_NO": self.invoice_no_edit.text(),
+            "Project_Code": self.project_code_edit.text(),
             "explanation": self.explanation_edit.text(),
             "amount": float(self.amount_edit.text()),
             "record_date": self.date_edit.date().toString("yyyy-MM-dd"),

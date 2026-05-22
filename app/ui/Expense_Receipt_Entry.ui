@@ -328,7 +328,7 @@ QToolButton#btnBack:pressed {
         <property name="verticalSpacing">
          <number>10</number>
         </property>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="QDateEdit" name="deDate">
           <property name="minimumSize">
            <size>
@@ -349,12 +349,76 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="leInvoiceNumber">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Invoice No</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QTextEdit" name="teExplanation">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Write a short description (optional)...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLineEdit" name="leExpense">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Amount</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="le_Project_Code">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>500</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Project Code</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
          <widget class="QComboBox" name="cbCompany">
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>58</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>500</height>
            </size>
           </property>
           <property name="placeholderText">
@@ -373,42 +437,17 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QComboBox" name="cbExpenseType">
+         <widget class="QComboBox" name="cbExpenseCenter">
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>58</height>
            </size>
           </property>
-          <property name="maxVisibleItems">
-           <number>6</number>
-          </property>
-          <property name="placeholderText">
-           <string>Expense Type</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>A</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>B</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>C</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="cbExpenseCenter">
-          <property name="minimumSize">
+          <property name="maximumSize">
            <size>
-            <width>0</width>
-            <height>58</height>
+            <width>300</width>
+            <height>500</height>
            </size>
           </property>
           <property name="maxVisibleItems">
@@ -434,43 +473,41 @@ QDateEdit#deDate::drop-down:pressed { background-color: #F57C00; }
           </item>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLineEdit" name="leInvoiceNumber">
+        <item row="5" column="1">
+         <widget class="QComboBox" name="cbExpenseType">
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>58</height>
            </size>
           </property>
-          <property name="placeholderText">
-           <string>Invoice No</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLineEdit" name="leExpense">
-          <property name="minimumSize">
+          <property name="maximumSize">
            <size>
-            <width>0</width>
-            <height>58</height>
+            <width>300</width>
+            <height>500</height>
            </size>
           </property>
-          <property name="placeholderText">
-           <string>Amount</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QTextEdit" name="teExplanation">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>50</height>
-           </size>
+          <property name="maxVisibleItems">
+           <number>6</number>
           </property>
           <property name="placeholderText">
-           <string>Write a short description (optional)...</string>
+           <string>Expense Type</string>
           </property>
+          <item>
+           <property name="text">
+            <string>A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>B</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>C</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>

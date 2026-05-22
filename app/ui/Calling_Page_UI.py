@@ -22,7 +22,7 @@ class Calling_Page(QWidget):
         self.current_full_name = self.us.full_name
         self.current_role = self.us.role
 
-        self.headers = ["id", "Invoice NO", "explanation", "record_date", "amount",
+        self.headers = ["id", "Invoice NO", "Project Code", "explanation", "record_date", "amount",
                         "expense_center", "expense_type", "company_name","created_by "]
         self.model = QStandardItemModel(self)
         self.model.setColumnCount(len(self.headers))
@@ -45,6 +45,7 @@ class Calling_Page(QWidget):
 
         # Radio buttons
         self.UI.rbInvoiceNo.setChecked(True)
+        self.UI.rbProjectCode.toggled.connect(lambda: self.change_page(4))
         self.UI.rbInvoiceNo.toggled.connect(lambda: self.change_page(3))
         self.UI.rbTimeRange.toggled.connect(lambda: self.change_page(2))
         self.UI.rbRegistrationDate.toggled.connect(lambda: self.change_page(1))
@@ -61,11 +62,11 @@ class Calling_Page(QWidget):
         self.UI.deLoginStart.setSpecialValueText("Start")
         self.UI.deLoginStart.setDisplayFormat("yyyy-MM-dd")
         self.UI.deLoginStart.setDate(self.UI.deLoginStart.minimumDate())
-
         self.UI.deRegstrationDate.setDisplayFormat("yyyy-MM-dd")
 
         #loading data
         self.logic.tableView = self.UI.tableView
+
         # Enable row selection on the table view
         self.UI.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.UI.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
@@ -79,8 +80,9 @@ class Calling_Page(QWidget):
         self.logic.deLoginStart = self.UI.deLoginStart
         self.logic.deLoginEnd = self.UI.deLoginEnd
 
-        self.UI.btnSearch.clicked.connect(lambda :self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.rbTimeRange,self.UI.leInvoiceNo,
-                                                                           self.UI.deLoginStart, self.UI.deLoginEnd,
+        self.UI.btnSearch.clicked.connect(lambda :self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
+                                                                           self.UI.rbProjectCode,self.UI.leProjectCode,
+                                                                           self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,
                                                                            self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation))
         self.UI.btnEditRecord.clicked.connect(self.edit_record)
         self.UI.btnDeleteRecord.clicked.connect(self.delete_record)
@@ -106,13 +108,15 @@ class Calling_Page(QWidget):
     def edit_record(self) -> None:
         self.logic.edit_record(self.UI.tableView)
         # Refresh the table
-        self.logic.load_invoices(self.UI.rbInvoiceNo, self.UI.rbTimeRange, self.UI.leInvoiceNo,
-                                 self.UI.deLoginStart, self.UI.deLoginEnd,
+        self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
+                                 self.UI.rbProjectCode,self.UI.leProjectCode,
+                                 self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,
                                  self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)
 
     def delete_record(self) -> None:
         self.logic.delete_record(self.UI.tableView)
         #Refresh the table
-        self.logic.load_invoices(self.UI.rbInvoiceNo, self.UI.rbTimeRange, self.UI.leInvoiceNo,
-                                 self.UI.deLoginStart, self.UI.deLoginEnd,
+        self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
+                                 self.UI.rbProjectCode,self.UI.leProjectCode,
+                                 self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,
                                  self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)
