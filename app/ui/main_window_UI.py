@@ -4,12 +4,19 @@ from pathlib import Path
 from app.controller.logic import main_window_logic
 from app.data.data_base import DataBase
 
+import sys
 
 class MainWindow(QDialog):
     def __init__(self) -> None:
+
         super().__init__()
-        ui_path = Path(__file__).parent / "main_window.ui"
-        self.UI = loadUi(ui_path, self)
+
+        if getattr(sys, 'frozen', False):
+            ui_path = Path(sys._MEIPASS) / "app" / "ui" / "main_window.ui"
+        else:
+            ui_path = Path(__file__).parent / "main_window.ui"
+
+        self.UI = loadUi(str(ui_path), self)
         self.setWindowTitle("Login")
         self.success = False
         self.role = ""

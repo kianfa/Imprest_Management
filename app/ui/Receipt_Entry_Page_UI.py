@@ -8,14 +8,19 @@ from app.controller.navigator import Navigator
 from app.data.data_base import UserSession
 import re
 from app.ui.Solar_Date import JalaliCalendarPopup
-
+import sys
 
 
 class Expense_Receipt_Entry(QWidget):
     def __init__(self) -> None:
         super().__init__()
-        ui_path = Path(__file__).parent / "Expense_Receipt_Entry.ui"
-        self.UI = loadUi(ui_path, self)
+
+        if getattr(sys, 'frozen', False):
+            ui_path = Path(sys._MEIPASS) / "app" / "ui" / "Expense_Receipt_Entry.ui"
+        else:
+            ui_path = Path(__file__).parent / "Expense_Receipt_Entry.ui"
+
+        self.UI = loadUi(str(ui_path), self)
 
 
         self.nav = Navigator()

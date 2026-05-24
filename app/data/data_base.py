@@ -3,12 +3,19 @@ import bcrypt
 import uuid
 from pathlib import Path
 from datetime import datetime
-
+import sys
+from pathlib import Path
 
 class Load_Save_Data:
     def __init__(self) -> None:
         pass
-    DB_PATH = Path(__file__).parent / "app.db"
+
+    if getattr(sys, 'frozen', False):
+        BASE_DIR = Path(sys.executable).parent
+    else:
+        BASE_DIR = Path(__file__).parent
+
+    DB_PATH = BASE_DIR / "app.db"
 
 
     @classmethod
@@ -175,7 +182,12 @@ class UserSession:
 
 
 class DataBase:
-    DB_PATH = Path(__file__).parent / "app.db"
+    if getattr(sys, 'frozen', False):
+        BASE_DIR = Path(sys.executable).parent
+    else:
+        BASE_DIR = Path(__file__).parent
+
+    DB_PATH = BASE_DIR / "app.db"
 
     @classmethod
     def get_connection(cls) -> sqlite3.Connection:

@@ -1,14 +1,19 @@
 from PyQt6.QtWidgets import QMainWindow
 from PyQt6.uic import loadUi
 from pathlib import Path
-
+import sys
 class Dashboard(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
+
         from app.controller.navigator import Navigator
 
-        ui_path = Path(__file__).parent / "Dashboard.ui"
-        self.UI = loadUi(ui_path, self)
+        if getattr(sys, 'frozen', False):
+            ui_path = Path(sys._MEIPASS) / "app" / "ui" / "Dashboard.ui"
+        else:
+            ui_path = Path(__file__).parent / "Dashboard.ui"
+
+        self.UI = loadUi(str(ui_path), self)
 
         self.setWindowTitle("Dashboard")
         self.nav=Navigator()

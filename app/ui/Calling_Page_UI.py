@@ -7,14 +7,18 @@ from app.controller.navigator import Navigator
 from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtWidgets import QWidget, QFileDialog
 from PyQt6.QtWidgets import QAbstractItemView
-
+import sys
 class Calling_Page(QWidget):
     def __init__(self) -> None:
         super().__init__()
 
         # Load UI made in Qt Designer
-        ui_path = Path(__file__).parent / "Calling_Page.ui"
-        self.UI = loadUi(ui_path, self)
+        if getattr(sys, 'frozen', False):
+            ui_path = Path(sys._MEIPASS) / "app" / "ui" / "Calling_Page.ui"
+        else:
+            ui_path = Path(__file__).parent / "Calling_Page.ui"
+
+        self.UI = loadUi(str(ui_path), self)
 
         self.nav = Navigator()
         self.us = UserSession()
