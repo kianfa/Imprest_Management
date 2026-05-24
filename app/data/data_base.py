@@ -235,9 +235,9 @@ class DataBase:
 
         users = [
             ('1', 'q', 'admin', 'Nozhan Ghayati'),
-            ('admin2', 'SecurePass456', 'admin', 'Bob Admin'),
-            ('user1', 'user111', 'user', 'Charlie User'),
-            ('user2', 'user222', 'user', 'Diana User'),
+            ('farooghi', '1234asd1234', 'admin', 'Kian Farooghi'),
+            ('chalabi', '12345678', 'admin', 'Chalabi'),
+            ('rahimi', '12345678', 'user', 'Rahimi'),
             ('user3', 'user333', 'user', 'Eve User'),
             ('user4', 'user444', 'user', 'Frank User'),
             ('user5', 'user555', 'user', 'Grace User'),
