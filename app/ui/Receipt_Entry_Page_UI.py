@@ -31,6 +31,8 @@ class Expense_Receipt_Entry(QWidget):
 
 
         # Enhance the three combo boxes (no UI changes needed)
+        self.logic.enhance_combo(self.UI.cbProjectCode,
+                                 settings_key="expense_center_items")
         self.logic.enhance_combo(self.UI.cbExpenseCenter,
                       settings_key="expense_center_items")
         self.logic.enhance_combo(self.UI.cbExpenseType,
@@ -79,47 +81,41 @@ class Expense_Receipt_Entry(QWidget):
         if self.UI.leInvoiceNumber.text() != "":
             if re.fullmatch(r"^[0-9]*$", self.UI.leInvoiceNumber.text()):
                 if self.logic.duplicate_check_invoice(self.UI.leInvoiceNumber.text().strip()):
-                    if self.UI.le_Project_Code.text() != "":
-                        if re.fullmatch(r"^[0-9]*$", self.UI.le_Project_Code.text()):
-                            if self.logic.duplicate_check_project(self.UI.le_Project_Code.text().strip()):
-                                if self.UI.leExpense.text() != "":
-                                    if re.fullmatch(r"^[0-9]*$", self.UI.leExpense.text().replace(",", "")):
-                                        if self.UI.leDate.text() != "":
-                                            if self.UI.cbExpenseCenter.currentIndex() != -1:
-                                                if self.UI.cbCompany.currentIndex() != -1:
-                                                    if self.UI.cbExpenseType.currentIndex() != -1:
-                                                        data = {
-                                                            "Invoice NO": self.UI.leInvoiceNumber.text(),
-                                                            "Project_Code": self.UI.le_Project_Code.text(),
-                                                            "explanation": self.UI.teExplanation.toPlainText(),
-                                                            "amount": int(self.UI.leExpense.text().replace(",", "")),
-                                                            "record_date": self.UI.leDate.text(),
-                                                            "image_paths": "|".join(self.logic.selected_image_paths),
-                                                            "expense_center": self.UI.cbExpenseCenter.currentText(),
-                                                            "expense_type": self.UI.cbExpenseType.currentText(),
-                                                            "company_name": self.UI.cbCompany.currentText(),
-                                                            "source_pc": "PC-1",
-                                                            "created_by": DataBase.get_user_full_name(current_user),
-                                                        }
-                                                        full_name = DataBase.get_user_full_name(current_user)
-                                                        Load_Save_Data().save_data(data, full_name)
-                                                        self.open_dashboard()
-                                                    else:
-                                                        self.logic.show_field_error("Expense Type")
-                                                else:
-                                                    self.logic.show_field_error("Company")
+                    if self.UI.cbProjectCode.currentIndex != -1:
+                        if self.UI.leExpense.text() != "":
+                            if re.fullmatch(r"^[0-9]*$", self.UI.leExpense.text().replace(",", "")):
+                                if self.UI.leDate.text() != "":
+                                    if self.UI.cbExpenseCenter.currentIndex() != -1:
+                                        if self.UI.cbCompany.currentIndex() != -1:
+                                            if self.UI.cbExpenseType.currentIndex() != -1:
+                                                data = {
+                                                    "Invoice NO": self.UI.leInvoiceNumber.text(),
+                                                    "Project_Code": self.UI.cbProjectCode.currentText(),
+                                                    "explanation": self.UI.teExplanation.toPlainText(),
+                                                    "amount": int(self.UI.leExpense.text().replace(",", "")),
+                                                    "record_date": self.UI.leDate.text(),
+                                                    "image_paths": "|".join(self.logic.selected_image_paths),
+                                                    "expense_center": self.UI.cbExpenseCenter.currentText(),
+                                                    "expense_type": self.UI.cbExpenseType.currentText(),
+                                                    "company_name": self.UI.cbCompany.currentText(),
+                                                    "source_pc": "PC-1",
+                                                    "created_by": DataBase.get_user_full_name(current_user),
+                                                }
+                                                full_name = DataBase.get_user_full_name(current_user)
+                                                Load_Save_Data().save_data(data, full_name)
+                                                self.open_dashboard()
                                             else:
-                                                self.logic.show_field_error("Expense Center")
+                                                self.logic.show_field_error("Expense Type")
                                         else:
-                                            self.logic.show_field_error("Date")
+                                            self.logic.show_field_error("Company")
                                     else:
-                                        self.logic.show_wrong_type_error("Amount")
+                                        self.logic.show_field_error("Expense Center")
                                 else:
-                                    self.logic.show_field_error("Amount")
+                                    self.logic.show_field_error("Date")
                             else:
-                                  self.logic.show_duplicate_error("Project Code")
+                                self.logic.show_wrong_type_error("Amount")
                         else:
-                            self.logic.show_wrong_type_error("Project Code")
+                            self.logic.show_field_error("Amount")
                     else:
                         self.logic.show_field_error("Project Code")
                 else:

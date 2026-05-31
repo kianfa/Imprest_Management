@@ -328,6 +328,25 @@ QToolButton#btnBack:pressed {
         <property name="verticalSpacing">
          <number>10</number>
         </property>
+        <item row="3" column="0">
+         <widget class="QLineEdit" name="leExpense">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>630</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Amount</string>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="1">
          <widget class="QComboBox" name="cbCompany">
           <property name="minimumSize">
@@ -353,6 +372,100 @@ QToolButton#btnBack:pressed {
           <item>
            <property name="text">
             <string>T</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="leInvoiceNumber">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>630</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Invoice No</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QTextEdit" name="teExplanation">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>630</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Write a short description (optional)...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLineEdit" name="leDate">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>630</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>Date</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="cbExpenseCenter">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>58</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>500</height>
+           </size>
+          </property>
+          <property name="maxVisibleItems">
+           <number>6</number>
+          </property>
+          <property name="placeholderText">
+           <string>Expense Center</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>B</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>C</string>
            </property>
           </item>
          </widget>
@@ -394,8 +507,14 @@ QToolButton#btnBack:pressed {
           </item>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="cbExpenseCenter">
+        <item row="1" column="1">
+         <widget class="QComboBox" name="cbProjectCode">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -404,7 +523,7 @@ QToolButton#btnBack:pressed {
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
+            <width>319</width>
             <height>500</height>
            </size>
           </property>
@@ -412,7 +531,7 @@ QToolButton#btnBack:pressed {
            <number>6</number>
           </property>
           <property name="placeholderText">
-           <string>Expense Center</string>
+           <string>Project Code</string>
           </property>
           <item>
            <property name="text">
@@ -429,77 +548,6 @@ QToolButton#btnBack:pressed {
             <string>C</string>
            </property>
           </item>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QTextEdit" name="teExplanation">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Write a short description (optional)...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="le_Project_Code">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>300</width>
-            <height>500</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Project Code</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLineEdit" name="leInvoiceNumber">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Invoice No</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLineEdit" name="leExpense">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Amount</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLineEdit" name="leDate">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>58</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Date</string>
-          </property>
          </widget>
         </item>
        </layout>

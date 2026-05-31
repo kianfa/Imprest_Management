@@ -38,7 +38,7 @@ class Calling_Page(QWidget):
 
         self.UI.tableView.setModel(self.model)
         self.UI.tableView.setModel(self.model)
-        self.UI.tableView.horizontalHeader().setDefaultSectionSize(122)
+        self.UI.tableView.horizontalHeader().setDefaultSectionSize(120)
         self.UI.tableView.horizontalHeader().setVisible(False)
         self.UI.tableView.verticalHeader().setVisible(False)  # removes row numbers + corner block
         self.UI.tableView.setCornerButtonEnabled(False)  # extra safety
