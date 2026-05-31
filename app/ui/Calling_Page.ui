@@ -282,7 +282,7 @@ QHeaderView::section {
         </size>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="pgInvoiceNo">
         <layout class="QHBoxLayout" name="horizontalLayout">
@@ -302,12 +302,9 @@ QHeaderView::section {
        <widget class="QWidget" name="pgRegstrationDate">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QDateEdit" name="deRegstrationDate">
-           <property name="displayFormat">
-            <string>yyyy/mm/dd</string>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
+          <widget class="QLineEdit" name="leRegistrationDate">
+           <property name="placeholderText">
+            <string>RegistrationDate</string>
            </property>
           </widget>
          </item>
@@ -318,16 +315,16 @@ QHeaderView::section {
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
-            <widget class="QDateEdit" name="deLoginStart">
-             <property name="calendarPopup">
-              <bool>true</bool>
+            <widget class="QLineEdit" name="leStartDate">
+             <property name="placeholderText">
+              <string>Start</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDateEdit" name="deLoginEnd">
-             <property name="calendarPopup">
-              <bool>true</bool>
+            <widget class="QLineEdit" name="leEndDate">
+             <property name="placeholderText">
+              <string>End</string>
              </property>
             </widget>
            </item>

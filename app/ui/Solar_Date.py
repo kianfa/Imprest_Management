@@ -1,4 +1,3 @@
-import sys
 import jdatetime
 
 from PyQt6.QtWidgets import (
@@ -25,6 +24,10 @@ class JalaliCalendarPopup(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.setStyleSheet("""
+        \n/* ===== Base ===== */\nQWidget {\n    background-color: #191919;\n    color: #EAEAEA;\n    font-family: "Segoe UI";\n    font-size: 13px;\n}\n\nQLabel {\n    color: #EAEAEA;\n}\n\n/* ===== GroupBox (card) ===== */\nQGroupBox {\n    background-color: #161616;\n    border: 1px solid #2A2A2A;\n    border-radius: 10px;\n    margin-top: 14px;\n    padding: 12px;\n}\n\nQGroupBox::title {\n    subcontrol-origin: margin;\n    subcontrol-position: top left;\n    left: 10px;\n    padding: 0 6px;\n    color: #EAEAEA;\n    font-weight: bold;\n}\n\n/* ===== Inputs ===== */\nQLineEdit, QComboBox, QDateEdit {\n    background-color: #1C1C1C;\n    color: #FFFFFF;\n    border: 1px solid #3A3A3A;\n    border-radius: 8px;\n    padding: 6px 10px;\n    min-height: 34px;\n}\n\nQLineEdit:focus, QComboBox:focus, QDateEdit:focus {\n    border: 2px solid #FF9800;\n}\n\n/* ===== ComboBox dropdown button ===== */\nQComboBox {\n    padding-right: 30px;\n}\n\nQComboBox::drop-down {\n    width: 26px;\n    border-left: 1px solid #3A3A3A;\n    background-color: #1C1C1C;\n}\n\nQComboBox::drop-down:hover {\n    background-color: #232323;\n}\n\n/* ===== DateEdit calendar button ===== */\nQDateEdit {\n    padding-right: 30px;\n}\n\nQDateEdit::drop-down {\n    width: 26px;\n    border-left: 1px solid #3A3A3A;\n    background-color: #FF9800;   /* calendar button color */\n}\n\nQDateEdit::drop-down:hover {\n    background-color: #FFA726;\n}\n\nQDateEdit::drop-down:pressed {\n    background-color: #F57C00;\n}\n\n/* ===== Calendar popup ===== */\nQCalendarWidget {\n    background-color: #151515;\n    color: #EAEAEA;\n    border: 1px solid #FF9800;\n}\n\nQCalendarWidget QToolButton {\n    color: #FFFFFF;\n    background-color: transparent;\n    border: none;\n    padding: 6px;\n}\n\nQCalendarWidget QToolButton:hover {\n    background-color: #232323;\n}\n\nQCalendarWidget QAbstractItemView {\n    background-color: #141414;\n    color: #EAEAEA;\n    selection-background-color: #FF9800;\n    selection-color: #111111;\n}\n\n/* ===== RadioButton ===== */\nQRadioButton {\n    color: #EAEAEA;\n    padding: 6px 4px;\n}\n\nQRadioButton::indicator {\n    width: 16px;\n    height: 16px;\n}\n\nQRadioButton::indicator:unchecked {\n    border: 2px solid #3A3A3A;\n    background-color: #1C1C1C;\n    border-radius: 8px;\n}\n\nQRadioButton::indicator:checked {\n    border: 2px solid #FF9800;\n    background-color: #FF9800;\n    border-radius: 8px;\n}\n\n/* ===== Buttons ===== */\nQPushButton {\n    background-color: transparent;\n    color: #FF9800;\n    font-weight: bold;\n    border: 2px solid #FF9800;\n    border-radius: 10px;\n    padding: 10px 14px;\n    min-height: 40px;\n}\n\nQPushButton:hover {\n    background-color: #232323;\n}\n\nQPushButton:pressed {\n    background-color: #2B2B2B;\n}\n\n/* Primary (Search) */\nQPushButton#btnSearch {\n    background-color: #FF9800;\n    color: #111111;\n    border: none;\n}\n\nQPushButton#btnSearch:hover { background-color: #FFA726; }\nQPushButton#btnSearch:pressed { background-color: #F57C00; }\n\n/* Secondary */\nQPushButton#btnSaveasexcel {\n    color: #EAEAEA;\n    border: 1px solid #3A3A3A;\n}\n\nQPushButton#btnSaveasexcel:hover {\n    background-color: #232323;\n}\n\n/* Disabled */\nQPushButton:disabled {\n    color: #777777;\n    border-color: #444444;\n}\n\n/* ===== Table ===== */\nQTableView {\n    background-color: #111827;\n    alternate-background-color: #0B1220;\n    color: #E5E7EB;\n    gridline-color: #1F2937;\n    border: 1px solid #1F2937;\n    border-radius: 8px;\n    selection-background-color: #FF9800;\n    selection-color: #111111;\n}\n\nQHeaderView::section {\n    background-color: #0F172A;\n    color: #E5E7EB;\n    padding: 8px 10px;\n    border: none;\n    border-right: 1px solid #1F2937;\n    font-weight: bold;\n}\n   
+        """)
 
         self.setWindowTitle("انتخاب تاریخ")
         self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
@@ -174,27 +177,19 @@ class JalaliDateEdit(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.line_edit = QLineEdit()
-        self.line_edit.setPlaceholderText("مثلاً 1403/02/15")
-        self.line_edit.setReadOnly(True)
-
-        self.button = QPushButton("📅")
-        self.button.clicked.connect(self.open_calendar)
-
-        layout.addWidget(self.line_edit)
-        layout.addWidget(self.button)
-
-    def open_calendar(self):
+    def get_date_from_calendar(self):
         popup = JalaliCalendarPopup(self)
-        popup.date_selected.connect(self.set_date)
+        selected = None
+
+        def on_date(d):
+            nonlocal selected
+            selected = d
+
+        popup.date_selected.connect(on_date)
         popup.exec()
-
-    def set_date(self, jalali_date):
-        self.selected_jalali_date = jalali_date
-
-        self.line_edit.setText(
-            f"{jalali_date.year:04d}/{jalali_date.month:02d}/{jalali_date.day:02d}"
-        )
+        if selected:
+            return f"{selected.year:04d}/{selected.month:02d}/{selected.day:02d}"
+        return ""
 
     def get_jalali_date(self):
         return self.selected_jalali_date

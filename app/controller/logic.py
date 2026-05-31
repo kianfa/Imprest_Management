@@ -255,8 +255,8 @@ class calling_page_logic:
     def load_invoices(self,
                       rbi : QRadioButton, lei : QLineEdit,
                       rbp : QRadioButton, lep: QLineEdit,
-                      rbt : QRadioButton, delogins : QDateEdit, delogine : QDateEdit,
-                      rbrd : QRadioButton, derd : QDateEdit,
+                      rbt : QRadioButton, lesd : QLineEdit, leed : QLineEdit,
+                      rbrd : QRadioButton, lerd : QLineEdit,
                       lee : QLineEdit) -> None:
         # Your repo functions return (headers, rows), so we ignore headers
         if rbi.isChecked():
@@ -266,13 +266,10 @@ class calling_page_logic:
             rows = Load_Save_Data.get_invoices_by_Project_Code(lep.text().strip())
 
         elif rbt.isChecked():
-            date_str_start = delogins.date().toString("yyyy-MM-dd")
-            date_str_end = delogine.date().toString("yyyy-MM-dd")
-            rows = Load_Save_Data.get_invoices_by_time_range(date_str_start, date_str_end)
+            rows = Load_Save_Data.get_invoices_by_time_range(lesd.text().strip(), leed.text().strip())
 
         elif rbrd.isChecked():
-            date_str = derd.date().toString("yyyy-MM-dd")
-            rows = Load_Save_Data.get_invoices_by_regestrationdate(date_str)
+            rows = Load_Save_Data.get_invoices_by_regestrationdate(lerd.text().strip())
 
         else:  # rbExplanation
             rows = Load_Save_Data.get_invoices_by_explanation(lee.text().strip())

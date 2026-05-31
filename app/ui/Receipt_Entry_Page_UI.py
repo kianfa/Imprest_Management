@@ -7,7 +7,7 @@ from app.controller.logic import receipt_entry_logic
 from app.controller.navigator import Navigator
 from app.data.data_base import UserSession
 import re
-from app.ui.Solar_Date import JalaliCalendarPopup
+from app.ui.Solar_Date import JalaliCalendarPopup, JalaliDateEdit
 import sys
 
 
@@ -45,7 +45,10 @@ class Expense_Receipt_Entry(QWidget):
         self.UI.btnClear.clicked.connect(self.clear_image)
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
         self.UI.btnSave.clicked.connect(self.save_record)
-        self.UI.leDate.mousePressEvent = self.open_jalali_calendar
+        self.date_picker = JalaliDateEdit()
+        self.UI.leDate.mousePressEvent = lambda event: self.UI.leDate.setText(
+            self.date_picker.get_date_from_calendar()
+        )
 
     def update_label(self, text):
         # Remove any non-digit characters (allow empty string)
@@ -58,24 +61,6 @@ class Expense_Receipt_Entry(QWidget):
             formatted = ""
         self.UI.leExpense.setText(f"{formatted}")
 
-    def open_jalali_calendar(self, event):
-        popup = JalaliCalendarPopup(self)
-
-        popup.date_selected.connect(self.set_jalali_date)
-
-        popup.exec()
-
-    def set_jalali_date(self, jalali_date):
-
-        # jalali_date is jdatetime.date
-
-        g_date = jalali_date.togregorian()
-
-        self.UI.leDate.setText(
-            f"{jalali_date.year:04d}/"
-            f"{jalali_date.month:02d}/"
-            f"{jalali_date.day:02d}"
-        )
 
     def add_images(self) -> None:
         self.logic.add_image_logic(self)

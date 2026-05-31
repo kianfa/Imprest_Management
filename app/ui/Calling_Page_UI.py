@@ -8,6 +8,10 @@ from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtWidgets import QWidget, QFileDialog
 from PyQt6.QtWidgets import QAbstractItemView
 import sys
+from app.ui.Solar_Date import JalaliDateEdit
+
+
+
 class Calling_Page(QWidget):
     def __init__(self) -> None:
         super().__init__()
@@ -55,18 +59,22 @@ class Calling_Page(QWidget):
         self.UI.rbRegistrationDate.toggled.connect(lambda: self.change_page(1))
         self.UI.rbExplanation.toggled.connect(lambda: self.change_page(0))
 
+        self.date_picker = JalaliDateEdit()
+
+        # DateEdit 1 (Registration)
+        self.UI.leRegistrationDate.mousePressEvent = lambda event: self.UI.leRegistrationDate.setText(
+            self.date_picker.get_date_from_calendar()
+        )
+
         # DateEdit 2 (Start)
-        self.UI.deLoginEnd.setMinimumDate(QDate(2000, 1, 1))
-        self.UI.deLoginEnd.setSpecialValueText("End")
-        self.UI.deLoginEnd.setDisplayFormat("yyyy-MM-dd")
-        self.UI.deLoginEnd.setDate(self.UI.deLoginEnd.minimumDate())
+        self.UI.leStartDate.mousePressEvent = lambda event: self.UI.leStartDate.setText(
+            self.date_picker.get_date_from_calendar()
+        )
 
         # DateEdit 3 (End)
-        self.UI.deLoginStart.setMinimumDate(QDate(2000, 1, 1))
-        self.UI.deLoginStart.setSpecialValueText("Start")
-        self.UI.deLoginStart.setDisplayFormat("yyyy-MM-dd")
-        self.UI.deLoginStart.setDate(self.UI.deLoginStart.minimumDate())
-        self.UI.deRegstrationDate.setDisplayFormat("yyyy-MM-dd")
+        self.UI.leEndDate.mousePressEvent = lambda event: self.UI.leEndDate.setText(
+            self.date_picker.get_date_from_calendar()
+        )
 
         #loading data
         self.logic.tableView = self.UI.tableView
@@ -78,8 +86,8 @@ class Calling_Page(QWidget):
         # Buttons
         self.UI.btnSearch.clicked.connect(lambda :self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
                                                                            self.UI.rbProjectCode,self.UI.leProjectCode,
-                                                                           self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,
-                                                                           self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation))
+                                                                           self.UI.rbTimeRange,self.UI.leStartDate, self.UI.leEndDate,
+                                                                           self.UI.rbRegistrationDate, self.UI.leRegistrationDate, self.UI.leExplanation))
         self.UI.btnEditRecord.clicked.connect(self.edit_record)
         self.UI.btnDeleteRecord.clicked.connect(self.delete_record)
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
@@ -106,13 +114,13 @@ class Calling_Page(QWidget):
         # Refresh the table
         self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
                                  self.UI.rbProjectCode,self.UI.leProjectCode,
-                                 self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,
-                                 self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)
+                                 self.UI.rbTimeRange,self.UI.leStartDate, self.UI.leEndDate,
+                                 self.UI.rbRegistrationDate, self.UI.leRegistrationDate, self.UI.leExplanation)
 
     def delete_record(self) -> None:
         self.logic.delete_record(self.UI.tableView)
         #Refresh the table
         self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
                                  self.UI.rbProjectCode,self.UI.leProjectCode,
-                                 self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,
-                                 self.UI.rbRegistrationDate, self.UI.deRegstrationDate, self.UI.leExplanation)
+                                 self.UI.rbTimeRange,self.UI.leStartDate, self.UI.leEndDate,
+                                 self.UI.rbRegistrationDate, self.UI.leRegistrationDate, self.UI.leExplanation)
