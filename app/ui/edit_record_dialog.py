@@ -17,7 +17,7 @@ class EditRecordDialog(QDialog):
         self.invoice_no_edit = QLineEdit(str(record_data["Invoice_NO"]))
         self.project_code_edit = QLineEdit(str(record_data["Project_Code"]))
         self.explanation_edit = QLineEdit(record_data["explanation"])
-        self.amount_edit = QLineEdit(str(record_data["amount"]))
+        self.amount_edit = QLineEdit(f"{int(record_data["amount"]):,}")
         self.date_edit = QLineEdit(str(record_data["record_date"]))
         self.expense_center_edit = QLineEdit(str(record_data["expense_center"]))
         self.expense_type_edit = QLineEdit(str(record_data["expense_type"]))

@@ -75,15 +75,7 @@ class Calling_Page(QWidget):
         self.UI.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.UI.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
 
-        self.logic.rbTimeRange = self.UI.rbTimeRange
-        self.logic.rbRegistrationDate = self.UI.rbRegistrationDate
-        self.logic.rbExplanation = self.UI.rbExplanation
-        self.logic.leInvoiceNo = self.UI.leInvoiceNo
-        self.logic.leExplanation = self.UI.leExplanation
-        self.logic.deRegstrationDate = self.UI.deRegstrationDate
-        self.logic.deLoginStart = self.UI.deLoginStart
-        self.logic.deLoginEnd = self.UI.deLoginEnd
-
+        # Buttons
         self.UI.btnSearch.clicked.connect(lambda :self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
                                                                            self.UI.rbProjectCode,self.UI.leProjectCode,
                                                                            self.UI.rbTimeRange,self.UI.deLoginStart, self.UI.deLoginEnd,

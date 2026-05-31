@@ -124,7 +124,7 @@ class Load_Save_Data:
             Invoice_NO=data["Invoice NO"],
             Project_Code=data["Project_Code"],
             explanation=data["explanation"],
-            amount=float(data["amount"]),
+            amount=int(data["amount"]),
             record_date=data["record_date"],
             image_path=data.get("image_paths", ""),
             source_pc=data["source_pc"],

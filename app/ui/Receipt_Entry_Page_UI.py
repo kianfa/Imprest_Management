@@ -26,6 +26,10 @@ class Expense_Receipt_Entry(QWidget):
         self.nav = Navigator()
         self.logic = receipt_entry_logic()
 
+        # Expense
+        self.UI.leExpense.textChanged.connect(self.update_label)
+
+
         # Enhance the three combo boxes (no UI changes needed)
         self.logic.enhance_combo(self.UI.cbExpenseCenter,
                       settings_key="expense_center_items")
@@ -42,6 +46,17 @@ class Expense_Receipt_Entry(QWidget):
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
         self.UI.btnSave.clicked.connect(self.save_record)
         self.UI.leDate.mousePressEvent = self.open_jalali_calendar
+
+    def update_label(self, text):
+        # Remove any non-digit characters (allow empty string)
+        digits = ''.join(filter(str.isdigit, text))
+        if digits:
+            # Convert to int and format with commas
+            number = int(digits)
+            formatted = f"{number:,}"
+        else:
+            formatted = ""
+        self.UI.leExpense.setText(f"{formatted}")
 
     def open_jalali_calendar(self, event):
         popup = JalaliCalendarPopup(self)
@@ -83,7 +98,7 @@ class Expense_Receipt_Entry(QWidget):
                         if re.fullmatch(r"^[0-9]*$", self.UI.le_Project_Code.text()):
                             if self.logic.duplicate_check_project(self.UI.le_Project_Code.text().strip()):
                                 if self.UI.leExpense.text() != "":
-                                    if re.fullmatch(r"^[0-9]*$", self.UI.leExpense.text()):
+                                    if re.fullmatch(r"^[0-9]*$", self.UI.leExpense.text().replace(",", "")):
                                         if self.UI.leDate.text() != "":
                                             if self.UI.cbExpenseCenter.currentIndex() != -1:
                                                 if self.UI.cbCompany.currentIndex() != -1:
@@ -92,7 +107,7 @@ class Expense_Receipt_Entry(QWidget):
                                                             "Invoice NO": self.UI.leInvoiceNumber.text(),
                                                             "Project_Code": self.UI.le_Project_Code.text(),
                                                             "explanation": self.UI.teExplanation.toPlainText(),
-                                                            "amount": self.UI.leExpense.text(),
+                                                            "amount": int(self.UI.leExpense.text().replace(",", "")),
                                                             "record_date": self.UI.leDate.text(),
                                                             "image_paths": "|".join(self.logic.selected_image_paths),
                                                             "expense_center": self.UI.cbExpenseCenter.currentText(),

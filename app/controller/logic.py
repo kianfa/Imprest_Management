@@ -294,7 +294,10 @@ class calling_page_logic:
         for row in rows:
             items = []
             for v in row:
-                item = QStandardItem("" if v is None else str(v))
+                if isinstance(v, float):
+                    item = QStandardItem(f"{int(v):,}")
+                else:
+                    item = QStandardItem("" if v is None else str(v))
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 items.append(item)
             self.model.appendRow(items)
