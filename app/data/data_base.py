@@ -137,7 +137,7 @@ class Load_Save_Data:
         ImageStore.copy_images_into_record_folder(id, img)
 
 
-    def get_image_paths_by_id(self, record_id: int) -> list[str]:
+    def get_image_paths_by_id(self, record_id: str) -> list[str]:
         conn = self.get_connection()
         cur = conn.cursor()
         cur.execute("SELECT image_path FROM records WHERE id = ?", (record_id,))
@@ -171,6 +171,44 @@ class Load_Save_Data:
         cur.execute("UPDATE records SET deleted = 1 WHERE id = ?", (record_id,))
         conn.commit()
         conn.close()
+
+
+
+    @classmethod
+    def update_record(cls, record_id: str, updated_data: dict) -> None:
+        conn = cls.get_connection()
+        cur = conn.cursor()
+        now = datetime.utcnow().isoformat()
+        cur.execute("""
+                    UPDATE records
+                    SET Invoice_NO     = ?,
+                        Project_Code   = ?,
+                        explanation    = ?,
+                        amount         = ?,
+                        record_date    = ?,
+                        expense_center = ?,
+                        expense_type   = ?,
+                        company_name   = ?,
+                        image_path     = ?,
+                        last_modified  = ?
+                    WHERE id = ?
+                    """, (
+                        updated_data["Invoice_NO"],
+                        updated_data["Project_Code"],
+                        updated_data["explanation"],
+                        updated_data["amount"],
+                        updated_data["record_date"],
+                        updated_data["expense_center"],
+                        updated_data["expense_type"],
+                        updated_data["company_name"],
+                        updated_data["image_path"],
+                        now,
+                        record_id
+                    ))
+        conn.commit()
+        conn.close()
+        img: list[str] = Load_Save_Data().get_image_paths_by_id(record_id)
+        ImageStore.copy_images_into_record_folder(record_id, img)
 
 
 
@@ -329,37 +367,6 @@ class DataBase:
         return record_id
 
 
-    @classmethod
-    def update_record(cls, record_id: str, updated_data: dict) -> None:
-        conn = cls.get_connection()
-        cur = conn.cursor()
-        now = datetime.utcnow().isoformat()
-        cur.execute("""
-                    UPDATE records
-                    SET Invoice_NO     = ?,
-                        Project_Code   = ?,
-                        explanation    = ?,
-                        amount         = ?,
-                        record_date    = ?,
-                        expense_center = ?,
-                        expense_type   = ?,
-                        company_name   = ?,
-                        last_modified  = ?
-                    WHERE id = ?
-                    """, (
-                        updated_data["Invoice_NO"],
-                        updated_data["Project_Code"],
-                        updated_data["explanation"],
-                        updated_data["amount"],
-                        updated_data["record_date"],
-                        updated_data["expense_center"],
-                        updated_data["expense_type"],
-                        updated_data["company_name"],
-                        now,
-                        record_id
-                    ))
-        conn.commit()
-        conn.close()
 
 
 from pathlib import Path
@@ -371,14 +378,14 @@ class ImageStore:
 
     #Making new folder
     @classmethod
-    def create_folder(cls, record_id: int) -> Path:
+    def create_folder(cls, record_id: str) -> Path:
         folder = cls.BASE_DIR / str(record_id)
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
     #Copying images in that folder
     @classmethod
-    def copy_images_into_record_folder(cls, record_id: int, original_paths: list[str]) -> list[str]:
+    def copy_images_into_record_folder(cls, record_id: str, original_paths: list[str]) -> list[str]:
         folder = cls.create_folder(record_id)
         copied_paths: list[str] = []
 

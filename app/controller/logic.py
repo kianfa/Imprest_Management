@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtGui import QAction, QIcon
 from app.ui.edit_record_dialog import EditRecordDialog
-from PyQt6.QtCore import Qt, QRect, QRectF
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QApplication,
     QTableView
@@ -322,7 +322,14 @@ class calling_page_logic:
         dialog = EditRecordDialog(record_data)
         if dialog.exec():
             updated = dialog.get_updated_data()
-            DataBase.update_record(record_id, updated)
+
+            target_path = Path(__file__).parent.parent.parent / "image_records" / str(record_id)
+
+            if target_path.exists() and target_path.is_dir():
+                shutil.rmtree(target_path)
+                QMessageBox.information(None, "Edited", "Record has been edited.")
+
+            Load_Save_Data.update_record(record_id, updated)
 
     def delete_record(self, table: QTableView) -> None:
         # Get selected row

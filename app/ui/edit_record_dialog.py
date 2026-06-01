@@ -1,6 +1,5 @@
-# edit_record_dialog.py
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QDateEdit, QComboBox, QDialogButtonBox
-from PyQt6.QtCore import QDate
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QDateEdit, QFileDialog, QDialogButtonBox
+from PyQt6.QtWidgets import QPushButton
 
 
 class EditRecordDialog(QDialog):
@@ -22,6 +21,7 @@ class EditRecordDialog(QDialog):
         self.expense_center_edit = QLineEdit(str(record_data["expense_center"]))
         self.expense_type_edit = QLineEdit(str(record_data["expense_type"]))
         self.company_edit = QLineEdit(str(record_data["company_name"]))
+        self.image_edit = QPushButton("Replace Image", self)
 
         # Combo boxes (populate as needed)
         form.addRow("Invoice No:", self.invoice_no_edit)
@@ -32,6 +32,9 @@ class EditRecordDialog(QDialog):
         form.addRow("Expense Center:", self.expense_center_edit)
         form.addRow("Expense Type:", self.expense_type_edit)
         form.addRow("Company:", self.company_edit)
+        form.addRow("Image:", self.image_edit)
+
+        self.image_edit.clicked.connect(self.add_images)
 
         layout.addLayout(form)
 
@@ -49,5 +52,21 @@ class EditRecordDialog(QDialog):
             "record_date": self.date_edit.text(),
             "expense_center": self.expense_center_edit.text(),
             "expense_type": self.expense_type_edit.text(),
-            "company_name": self.company_edit.text()
+            "company_name": self.company_edit.text(),
+            "image_path": (
+            self.selected_image_paths[0]
+            if hasattr(self, "selected_image_paths") and self.selected_image_paths
+            else None
+            )
         }
+
+    def add_images(self) -> None:
+        file_paths = QFileDialog.getOpenFileNames(
+            self,
+            "Add images",
+            "./",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp)"
+        )[0]
+
+        if file_paths:
+            self.selected_image_paths = file_paths
