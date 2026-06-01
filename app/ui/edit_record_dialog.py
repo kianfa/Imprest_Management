@@ -45,14 +45,14 @@ class EditRecordDialog(QDialog):
 
     def get_updated_data(self):
         return {
-            "Invoice_NO": self.invoice_no_edit.text(),
-            "Project_Code": self.project_code_edit.text(),
-            "explanation": self.explanation_edit.text(),
-            "amount": float(self.amount_edit.text()),
-            "record_date": self.date_edit.text(),
+            "Invoice_NO":     self.invoice_no_edit.text(),
+            "Project_Code":   self.project_code_edit.text(),
+            "explanation":    self.explanation_edit.text(),
+            "amount":         self.amount_edit.text(),
+            "record_date":    self.date_edit.text(),
             "expense_center": self.expense_center_edit.text(),
-            "expense_type": self.expense_type_edit.text(),
-            "company_name": self.company_edit.text(),
+            "expense_type":   self.expense_type_edit.text(),
+            "company_name":   self.company_edit.text(),
             "image_path": (
             self.selected_image_paths[0]
             if hasattr(self, "selected_image_paths") and self.selected_image_paths
