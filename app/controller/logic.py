@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from email.headerregistry import Address
-
-from openpyxl.utils import rows_from_range
-
+import shutil
 from app.data.data_base import Load_Save_Data,UserSession
 from PyQt6.QtGui import QStandardItem, QImage
 from PyQt6.QtWidgets import (
@@ -22,10 +19,6 @@ from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtGui import QAction, QIcon
 from app.ui.edit_record_dialog import EditRecordDialog
 from PyQt6.QtCore import Qt, QRect, QRectF
-from PyQt6.QtGui import QPainter, QPen, QFont, QImageReader, QPageSize, QPageLayout
-from PyQt6.QtPrintSupport import QPrinter
-from PyQt6.QtCore import QMarginsF
-from PyQt6.QtWidgets import QApplication
 from PyQt6.QtWidgets import (
     QApplication,
     QTableView
@@ -304,12 +297,16 @@ class calling_page_logic:
 
 
     def edit_record(self, table: QTableView) -> None:
-        selected = table.selectedIndexes()
-        if not selected:
-            QMessageBox.warning(None, "No Selection", "Please select a record to edit.")
+        rows = table.selectionModel().selectedRows()
+        if len(rows) != 1:
+            QMessageBox.warning(
+                None,
+                "Selection Error",
+                "Please select exactly one record to edit."
+            )
             return
 
-        row = selected[0].row()
+        row = rows[0].row()
         record_id = self.model.item(row, 0).text()
         created_by = self.model.item(row, 9).text()
 
@@ -345,10 +342,15 @@ class calling_page_logic:
 
         # Confirmation dialog
         reply = QMessageBox.question(None, "Confirm Delete",
-                                     "Are you sure you want to delete this record?\nThis action cannot be undone.",
+                                     "This action cannot be undone. Do you want to continue?",
                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
+        target_path = Path(__file__).parent.parent.parent / "image_records" / str(record_id)
+
         if reply == QMessageBox.StandardButton.Yes:
+            if target_path.exists():
+                shutil.rmtree(target_path)
+
             Load_Save_Data.soft_delete_record(record_id)
             QMessageBox.information(None, "Deleted", "Record has been deleted.")
 
