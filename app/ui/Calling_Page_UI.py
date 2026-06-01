@@ -5,7 +5,7 @@ from app.controller.logic import calling_page_logic, exporting
 from app.data.data_base import Load_Save_Data, UserSession
 from app.controller.navigator import Navigator
 from PyQt6.QtGui import QStandardItemModel
-from PyQt6.QtWidgets import QWidget, QFileDialog
+from PyQt6.QtWidgets import QWidget, QFileDialog, QTableView
 from PyQt6.QtWidgets import QAbstractItemView
 import sys
 from app.ui.Solar_Date import JalaliDateEdit
@@ -81,7 +81,7 @@ class Calling_Page(QWidget):
 
         # Enable row selection on the table view
         self.UI.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.UI.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.UI.tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # Buttons
         self.UI.btnSearch.clicked.connect(lambda :self.logic.load_invoices(self.UI.rbInvoiceNo,self.UI.leInvoiceNo,
