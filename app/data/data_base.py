@@ -151,7 +151,7 @@ class Load_Save_Data:
     def invoice_exists(self, invoice_number: str) -> bool:
         conn = self.get_connection()
         cur = conn.cursor()
-        cur.execute("SELECT 1 FROM records WHERE Invoice_NO = ?", (invoice_number,))
+        cur.execute("SELECT 1 FROM records WHERE Invoice_NO = ? AND deleted = 0", (invoice_number,))
         exists = cur.fetchone() is not None
         conn.close()
         return exists
