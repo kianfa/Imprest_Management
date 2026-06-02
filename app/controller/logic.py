@@ -1,5 +1,7 @@
 from __future__ import annotations
-
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+from openpyxl.utils import get_column_letter
 import os
 from dataclasses import dataclass
 import shutil
@@ -549,9 +551,6 @@ class exporting:
 
         export_view.deleteLater()
 
-
-
-
     def export_tableview_to_excel(self, view) -> None:
         model = view.model()
         header = view.horizontalHeader()
@@ -559,75 +558,133 @@ class exporting:
         if model is None:
             raise RuntimeError("Could not find model")
 
-        #columns
+        # Get visible columns in display order
         export_col = []
         for visual in range(header.count()):
             logical = header.logicalIndex(visual)
-            if 0<= logical < model.columnCount():
+            if 0 <= logical < model.columnCount():
                 export_col.append(logical)
 
-        if export_col is None:
-            raise RuntimeError("Could not find column")
+        if not export_col:
+            raise RuntimeError("Could not find columns")
 
-        #building Excel file
+        # Create workbook
         wb = Workbook()
         ws = wb.active
         ws.title = "Export Table"
 
         header_font = Font(bold=True)
-        header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        header_align = Alignment(
+            horizontal="center",
+            vertical="center",
+            wrap_text=True
+        )
 
-        for out_col, logical_col in enumerate(export_col, start=1):
-            title = model.headerData(logical_col, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
+        # ==================================================
+        # HEADER ROW (ROW 1)
+        # ==================================================
+
+        # Numbering column header
+        cell = ws.cell(row=1, column=1, value="No.")
+        cell.font = header_font
+        cell.alignment = header_align
+
+        # Table headers
+        for excel_col, logical_col in enumerate(export_col, start=2):
+            title = model.headerData(
+                logical_col,
+                Qt.Orientation.Horizontal,
+                Qt.ItemDataRole.DisplayRole
+            )
+
             text = "" if title is None else str(title)
 
-            cell = ws.cell(row=1, column=out_col, value=text)
+            cell = ws.cell(
+                row=1,
+                column=excel_col,
+                value=text
+            )
             cell.font = header_font
             cell.alignment = header_align
 
         ws.freeze_panes = "A2"
 
-        #write all visible data rows
-        start_excel_row = 2
+        # ==================================================
+        # DATA ROWS (START FROM ROW 2)
+        # ==================================================
+
         rows = model.rowCount()
 
         for r in range(rows):
-            excel_row = start_excel_row + r
+            excel_row = r + 1
 
-            for excel_col, logical_col in enumerate(export_col, start=1):
+            # Row number
+            ws.cell(
+                row=excel_row + 1,
+                column=1,
+                value=r + 1
+            )
+
+            # Data columns
+            for excel_col, logical_col in enumerate(export_col, start=2):
                 idx = model.index(r, logical_col)
-                value = model.data(idx, Qt.ItemDataRole.DisplayRole)
+
+                value = model.data(
+                    idx,
+                    Qt.ItemDataRole.DisplayRole
+                )
+
                 if value is None:
-                    state = model.data(idx, Qt.CheckStateRole)
+                    state = model.data(
+                        idx,
+                        Qt.CheckStateRole
+                    )
+
                     if state is not None:
                         value = "✓" if state == Qt.Checked else "✗"
                     else:
                         value = ""
 
-                ws.cell(row=excel_row, column=excel_col, value=str(value))
+                ws.cell(
+                    row=excel_row,
+                    column=excel_col,
+                    value=str(value)
+                )
 
-        #Fixing the width of cells for readability
-        from openpyxl.utils import get_column_letter
+        # ==================================================
+        # AUTO WIDTH
+        # ==================================================
 
-        max_lens = [0] * len(export_col)
+        total_columns = len(export_col) + 1
 
-        for row in ws.iter_rows(min_row=1, max_row=ws.max_row,
-                                min_col=1, max_col=len(export_col)):
-            for i, cell in enumerate(row):
-                v = cell.value
-                if v is None:
-                    continue
-                s = str(v)
-                if len(s) > max_lens[i]:
-                    max_lens[i] = len(s)
+        for col in range(1, total_columns + 1):
+            max_length = 0
 
-        for i, m in enumerate(max_lens, start=1):
-            col_letter = get_column_letter(i)
-            width = max(10, min(60, m + 2))
-            ws.column_dimensions[col_letter].width = width
+            for row in range(1, ws.max_row + 1):
+                value = ws.cell(row=row, column=col).value
 
-        # Step 6: Save dialog + save workbook + error handling
+                if value is not None:
+                    max_length = max(
+                        max_length,
+                        len(str(value))
+                    )
+
+            letter = get_column_letter(col)
+
+            if col == 1:
+                ws.column_dimensions[letter].width = 8
+            else:
+                ws.column_dimensions[letter].width = max(
+                    15,
+                    min(max_length + 2, 60)
+                )
+
+        # ==================================================
+        # SAVE FILE
+        # ==================================================
+
         parent = view.window()
+
         path, _ = QFileDialog.getSaveFileName(
             parent,
             "Save Excel",
@@ -636,32 +693,32 @@ class exporting:
         )
 
         if not path:
-            return  # user cancelled
+            return
 
         if not path.lower().endswith(".xlsx"):
             path += ".xlsx"
 
         try:
             wb.save(path)
+
         except PermissionError:
             QMessageBox.warning(
                 self,
                 "Save failed",
                 "Could not write the file.\n"
-                "If it's open in Excel, close it and try again, or choose another location."
+                "If it's open in Excel, close it and try again."
             )
-            return
+
         except OSError as e:
             QMessageBox.critical(
                 self,
                 "Save failed",
-                f"OS error while saving the file:\n{e}"
+                f"OS error while saving:\n{e}"
             )
-            return
+
         except Exception as e:
             QMessageBox.critical(
                 self,
                 "Save failed",
-                f"Unexpected error while saving the file:\n{e}"
+                f"Unexpected error:\n{e}"
             )
-            return
