@@ -6,6 +6,13 @@ class Navigator:
         current_window.close()
         return dashboard
 
+    def main_window_navigator_about_us(self, current_window) -> None:
+        from app.ui.About_us import AboutDialog
+
+        self.about_us = AboutDialog(previous_window=current_window)
+        self.about_us.show()
+        current_window.hide()
+
     def dashboard_page_navigator_expense_entry(self, current_window) -> None:
         from app.ui.Receipt_Entry_Page_UI import Expense_Receipt_Entry
         expense_entry_nav = Expense_Receipt_Entry()

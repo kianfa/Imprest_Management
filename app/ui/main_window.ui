@@ -260,7 +260,7 @@ QFrame#divider {
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>300</height>
+          <height>359</height>
          </size>
         </property>
        </spacer>
@@ -268,7 +268,8 @@ QFrame#divider {
       <item>
        <widget class="QLabel" name="lblFooterLeft">
         <property name="text">
-         <string>© 2026 Your Company</string>
+         <string>Designed &amp; Developed by Nozhan Ghayati
+Project Management &amp; QA by Kian Farooghi</string>
         </property>
        </widget>
       </item>
