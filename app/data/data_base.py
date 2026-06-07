@@ -4,34 +4,42 @@ import uuid
 from pathlib import Path
 from datetime import datetime
 import sys
-from pathlib import Path
+import os
+
+# ===================================================
+#  Central path helper — everything writable goes to
+#  C:\Users\Username\AppData\Roaming\Imprest Management\
+# ===================================================
+def get_app_dir() -> Path:
+    app_data = os.getenv('APPDATA')  # Always writable on Windows
+    app_dir = Path(app_data) / "Imprest Management"
+    app_dir.mkdir(parents=True, exist_ok=True)
+    return app_dir
+
+APP_DIR = get_app_dir()
+DB_PATH = APP_DIR / "app.db"
+IMAGE_RECORDS_DIR = APP_DIR / "image_records"
+IMAGE_RECORDS_DIR.mkdir(parents=True, exist_ok=True)
+
 
 class Load_Save_Data:
     def __init__(self) -> None:
         pass
 
-    if getattr(sys, 'frozen', False):
-        BASE_DIR = Path(sys.executable).parent
-    else:
-        BASE_DIR = Path(__file__).parent
-
-    DB_PATH = BASE_DIR / "app.db"
-
+    DB_PATH = DB_PATH  # use global writable path
 
     @classmethod
     def get_connection(self) -> sqlite3.Connection:
         return sqlite3.connect(self.DB_PATH)
 
-
     @classmethod
     def fetch_all(self, query, params=None) -> list[tuple]:
         conn = self.get_connection()
         cur = conn.cursor()
-        cur.execute(query,params)
+        cur.execute(query, params)
         rows = cur.fetchall()
         conn.close()
         return rows
-
 
     def get_record_by_id(self, record_id):
         conn = self.get_connection()
@@ -59,67 +67,63 @@ class Load_Save_Data:
             }
         return None
 
-
     @classmethod
     def get_invoices_by_Invoice_NO(self, Invoice_NO) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+        query = """
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name, created_by
             FROM records
             WHERE Invoice_NO LIKE ?
             AND deleted = 0
         """
-        return self.fetch_all(query,(Invoice_NO,))
+        return self.fetch_all(query, (Invoice_NO,))
 
     @classmethod
     def get_invoices_by_Project_Code(self, Project_Code) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+        query = """
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name, created_by
             FROM records
             WHERE Project_Code LIKE ?
             AND deleted = 0
         """
-        return self.fetch_all(query,(Project_Code,))
+        return self.fetch_all(query, (Project_Code,))
 
     @classmethod
     def get_invoices_by_explanation(self, explanation) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+        query = """
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name, created_by
             FROM records
             WHERE explanation LIKE ?
             AND deleted = 0
         """
-        return self.fetch_all(query,(f"%{explanation}%",))
-
+        return self.fetch_all(query, (f"%{explanation}%",))
 
     @classmethod
     def get_invoices_by_regestrationdate(self, regestrationdate) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
+        query = """
+            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name, created_by
             FROM records
             WHERE record_date = ?
             AND deleted = 0
         """
-        return self.fetch_all(query,(regestrationdate,))
-
+        return self.fetch_all(query, (regestrationdate,))
 
     @classmethod
-    def get_invoices_by_time_range(self, startdate,enddate) -> list[tuple]:
-        query="""
-        SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
+    def get_invoices_by_time_range(self, startdate, enddate) -> list[tuple]:
+        query = """
+        SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name, created_by
         FROM records
         WHERE record_date >= ? AND record_date <= ?
         AND deleted = 0
         """
         conn = self.get_connection()
         cur = conn.cursor()
-        cur.execute(query,(startdate,enddate))
+        cur.execute(query, (startdate, enddate))
         rows = cur.fetchall()
         conn.close()
         return rows
 
-
     @staticmethod
-    def save_data(data: dict, created_by:str) -> None:
+    def save_data(data: dict, created_by: str) -> None:
         id: int = DataBase().insert_record(
             Invoice_NO=data["Invoice NO"],
             Project_Code=data["Project_Code"],
@@ -131,11 +135,10 @@ class Load_Save_Data:
             expense_center=data["expense_center"],
             expense_type=data["expense_type"],
             company_name=data["company_name"],
-            created_by = created_by
+            created_by=created_by
         )
-        img:list[str] = Load_Save_Data().get_image_paths_by_id(id)
+        img: list[str] = Load_Save_Data().get_image_paths_by_id(id)
         ImageStore.copy_images_into_record_folder(id, img)
-
 
     def get_image_paths_by_id(self, record_id: str) -> list[str]:
         conn = self.get_connection()
@@ -143,10 +146,8 @@ class Load_Save_Data:
         cur.execute("SELECT image_path FROM records WHERE id = ?", (record_id,))
         row = cur.fetchone()
         conn.close()
-
         raw = "" if not row or row[0] is None else str(row[0]).strip()
         return [p.strip() for p in raw.split("|") if p.strip()]
-
 
     def invoice_exists(self, invoice_number: str) -> bool:
         conn = self.get_connection()
@@ -172,8 +173,6 @@ class Load_Save_Data:
         conn.commit()
         conn.close()
 
-
-
     @classmethod
     def update_record(cls, record_id: str, updated_data: dict) -> None:
         conn = cls.get_connection()
@@ -193,23 +192,22 @@ class Load_Save_Data:
                         last_modified  = ?
                     WHERE id = ?
                     """, (
-                        updated_data["Invoice_NO"],
-                        updated_data["Project_Code"],
-                        updated_data["explanation"],
-                        updated_data["amount"],
-                        updated_data["record_date"],
-                        updated_data["expense_center"],
-                        updated_data["expense_type"],
-                        updated_data["company_name"],
-                        updated_data["image_path"],
-                        now,
-                        record_id
-                    ))
+            updated_data["Invoice_NO"],
+            updated_data["Project_Code"],
+            updated_data["explanation"],
+            updated_data["amount"],
+            updated_data["record_date"],
+            updated_data["expense_center"],
+            updated_data["expense_type"],
+            updated_data["company_name"],
+            updated_data["image_path"],
+            now,
+            record_id
+        ))
         conn.commit()
         conn.close()
         img: list[str] = Load_Save_Data().get_image_paths_by_id(record_id)
         ImageStore.copy_images_into_record_folder(record_id, img)
-
 
 
 class UserSession:
@@ -218,14 +216,8 @@ class UserSession:
     role = ""
 
 
-
 class DataBase:
-    if getattr(sys, 'frozen', False):
-        BASE_DIR = Path(sys.executable).parent
-    else:
-        BASE_DIR = Path(__file__).parent
-
-    DB_PATH = BASE_DIR / "app.db"
+    DB_PATH = DB_PATH  # use global writable path
 
     @classmethod
     def get_connection(cls) -> sqlite3.Connection:
@@ -240,7 +232,7 @@ class DataBase:
                     Project_Code TEXT NOT NULL,
                     explanation TEXT,
                     amount REAL,
-                    record_date TEXT, 
+                    record_date TEXT,
                     image_path TEXT,
                     last_modified TEXT NOT NULL,
                     source_pc TEXT NOT NULL,
@@ -257,10 +249,9 @@ class DataBase:
         try:
             cur.execute("ALTER TABLE records ADD COLUMN deleted INTEGER DEFAULT 0")
         except sqlite3.OperationalError:
-            pass  # column already exists
+            pass
         conn.commit()
 
-        # Create users table (if not exists)
         cur.execute(
             '''CREATE TABLE IF NOT EXISTS users
                 (
@@ -275,8 +266,6 @@ class DataBase:
         )
         conn.commit()
         conn.close()
-
-    # ========== USER AUTHENTICATION METHODS ==========
 
     @classmethod
     def create_default_users(cls) -> None:
@@ -308,11 +297,6 @@ class DataBase:
 
     @classmethod
     def verify_login(cls, username: str, password: str) -> tuple[bool, str]:
-        """
-        Returns (success, role)
-        success: True if password matches, else False
-        role: 'admin' or 'user' (empty string if login fails)
-        """
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute('SELECT hashed_password, role FROM users WHERE username = ?', (username,))
@@ -329,14 +313,12 @@ class DataBase:
 
     @classmethod
     def get_user_role(cls, username: str) -> str:
-        """Return role ('admin' / 'user') or empty string if user not found."""
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute('SELECT role FROM users WHERE username = ?', (username,))
         row = cur.fetchone()
         conn.close()
         return row[0] if row else ""
-
 
     @classmethod
     def get_user_full_name(cls, username: str) -> str:
@@ -347,11 +329,10 @@ class DataBase:
         conn.close()
         return row[0] if row and row[0] else username
 
-
     @classmethod
     def insert_record(self, Invoice_NO, Project_Code, explanation, amount, record_date,
                       image_path, source_pc, expense_center, expense_type,
-                      company_name, created_by) -> str:  # new parameter
+                      company_name, created_by) -> str:
         conn = self.get_connection()
         cur = conn.cursor()
         record_id = str(uuid.uuid4())
@@ -367,23 +348,19 @@ class DataBase:
         return record_id
 
 
-
-
 from pathlib import Path
 import shutil
 
 class ImageStore:
-    BASE_DIR = Path(r"./image_records")
+    BASE_DIR = IMAGE_RECORDS_DIR  # use global writable path
     BASE_DIR.mkdir(parents=True, exist_ok=True)
 
-    #Making new folder
     @classmethod
     def create_folder(cls, record_id: str) -> Path:
         folder = cls.BASE_DIR / str(record_id)
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
-    #Copying images in that folder
     @classmethod
     def copy_images_into_record_folder(cls, record_id: str, original_paths: list[str]) -> list[str]:
         folder = cls.create_folder(record_id)
@@ -393,7 +370,6 @@ class ImageStore:
             src_path = Path(src)
             if not src_path.exists():
                 continue
-
             dest = folder / f"{i:03d}{src_path.suffix.lower()}"
             shutil.copy2(src_path, dest)
             copied_paths.append(str(dest))
