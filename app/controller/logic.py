@@ -325,12 +325,7 @@ class calling_page_logic:
         if dialog.exec():
             updated = dialog.get_updated_data()
 
-            target_path = Path(__file__).parent.parent.parent / "image_records" / str(record_id)
-
-            if target_path.exists() and target_path.is_dir():
-                shutil.rmtree(target_path)
-                QMessageBox.information(None, "Edited", "Record has been edited.")
-
+            QMessageBox.information(None, "Edited", "Record has been edited.")
             Load_Save_Data.update_record(record_id, updated)
 
     def delete_record(self, table: QTableView) -> None:

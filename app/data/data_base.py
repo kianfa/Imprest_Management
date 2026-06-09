@@ -4,44 +4,58 @@ import uuid
 from pathlib import Path
 from datetime import datetime
 import sys
-from pathlib import Path
+import shutil
+
+# ==================== PATH ====================
+if getattr(sys, 'frozen', False):
+    EXE_DIR = Path(sys.executable).parent
+    DB_PATH = EXE_DIR / "app.db"
+    IMAGE_DIR = EXE_DIR / "image_records"
+else:
+    DB_PATH = Path(__file__).resolve().parent / "app.db"
+    IMAGE_DIR = Path(r"./image_records").resolve()
+
+IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# ============================================================================
 
 class Load_Save_Data:
     def __init__(self) -> None:
         pass
 
-    if getattr(sys, 'frozen', False):
-        BASE_DIR = Path(sys.executable).parent
-    else:
-        BASE_DIR = Path(__file__).parent
-
-    DB_PATH = BASE_DIR / "app.db"
-
+    @classmethod
+    def get_connection(cls) -> sqlite3.Connection:
+        return sqlite3.connect(DB_PATH)
 
     @classmethod
-    def get_connection(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.DB_PATH)
-
-
-    @classmethod
-    def fetch_all(self, query, params=None) -> list[tuple]:
-        conn = self.get_connection()
+    def fetch_all(cls, query, params=None) -> list[tuple]:
+        conn = cls.get_connection()
         cur = conn.cursor()
-        cur.execute(query,params)
+        cur.execute(query, params if params else ())
         rows = cur.fetchall()
         conn.close()
         return rows
 
-
-    def get_record_by_id(self, record_id):
-        conn = self.get_connection()
+    @classmethod
+    def get_record_by_id(cls, record_id) -> dict | None:
+        conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute("""
-                    SELECT Invoice_NO, Project_Code, explanation, amount, record_date, image_path, expense_center, expense_type, company_name, created_by
+                    SELECT Invoice_NO,
+                           Project_Code,
+                           explanation,
+                           amount,
+                           record_date,
+                           image_path,
+                           expense_center,
+                           expense_type,
+                           company_name,
+                           created_by
                     FROM records
                     WHERE id = ?
-                    AND deleted = 0
-                """, (record_id,))
+                      AND deleted = 0
+                    """, (record_id,))
         row = cur.fetchone()
         conn.close()
         if row:
@@ -59,68 +73,111 @@ class Load_Save_Data:
             }
         return None
 
+    @classmethod
+    def get_invoices_by_Invoice_NO(cls, Invoice_NO) -> list[tuple]:
+        query = """
+                SELECT Id, \
+                       Invoice_NO, \
+                       Project_Code, \
+                       explanation, \
+                       record_date, \
+                       amount, \
+                       expense_center, \
+                       expense_type, \
+                       company_name, \
+                       created_by
+                FROM records
+                WHERE Invoice_NO LIKE ?
+                  AND deleted = 0 \
+                """
+        return cls.fetch_all(query, (Invoice_NO,))
 
     @classmethod
-    def get_invoices_by_Invoice_NO(self, Invoice_NO) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
-            FROM records
-            WHERE Invoice_NO LIKE ?
-            AND deleted = 0
-        """
-        return self.fetch_all(query,(Invoice_NO,))
+    def get_invoices_by_Project_Code(cls, Project_Code) -> list[tuple]:
+        query = """
+                SELECT Id, \
+                       Invoice_NO, \
+                       Project_Code, \
+                       explanation, \
+                       record_date, \
+                       amount, \
+                       expense_center, \
+                       expense_type, \
+                       company_name, \
+                       created_by
+                FROM records
+                WHERE Project_Code LIKE ?
+                  AND deleted = 0 \
+                """
+        return cls.fetch_all(query, (Project_Code,))
 
     @classmethod
-    def get_invoices_by_Project_Code(self, Project_Code) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
-            FROM records
-            WHERE Project_Code LIKE ?
-            AND deleted = 0
-        """
-        return self.fetch_all(query,(Project_Code,))
+    def get_invoices_by_explanation(cls, explanation) -> list[tuple]:
+        query = """
+                SELECT Id, \
+                       Invoice_NO, \
+                       Project_Code, \
+                       explanation, \
+                       record_date, \
+                       amount, \
+                       expense_center, \
+                       expense_type, \
+                       company_name, \
+                       created_by
+                FROM records
+                WHERE explanation LIKE ?
+                  AND deleted = 0 \
+                """
+        return cls.fetch_all(query, (f"%{explanation}%",))
 
     @classmethod
-    def get_invoices_by_explanation(self, explanation) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
-            FROM records
-            WHERE explanation LIKE ?
-            AND deleted = 0
-        """
-        return self.fetch_all(query,(f"%{explanation}%",))
-
-
-    @classmethod
-    def get_invoices_by_regestrationdate(self, regestrationdate) -> list[tuple]:
-        query="""
-            SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center, expense_type, company_name,created_by
-            FROM records
-            WHERE record_date = ?
-            AND deleted = 0
-        """
-        return self.fetch_all(query,(regestrationdate,))
-
+    def get_invoices_by_regestrationdate(cls, regestrationdate) -> list[tuple]:
+        query = """
+                SELECT Id, \
+                       Invoice_NO, \
+                       Project_Code, \
+                       explanation, \
+                       record_date, \
+                       amount, \
+                       expense_center, \
+                       expense_type, \
+                       company_name, \
+                       created_by
+                FROM records
+                WHERE record_date = ?
+                  AND deleted = 0 \
+                """
+        return cls.fetch_all(query, (regestrationdate,))
 
     @classmethod
-    def get_invoices_by_time_range(self, startdate,enddate) -> list[tuple]:
-        query="""
-        SELECT Id, Invoice_NO, Project_Code, explanation, record_date, amount, expense_center,expense_type,company_name,created_by
-        FROM records
-        WHERE record_date >= ? AND record_date <= ?
-        AND deleted = 0
-        """
-        conn = self.get_connection()
+    def get_invoices_by_time_range(cls, startdate, enddate) -> list[tuple]:
+        query = """
+                SELECT Id, \
+                       Invoice_NO, \
+                       Project_Code, \
+                       explanation, \
+                       record_date, \
+                       amount, \
+                       expense_center, \
+                       expense_type, \
+                       company_name, \
+                       created_by
+                FROM records
+                WHERE record_date >= ? \
+                  AND record_date <= ?
+                  AND deleted = 0 \
+                """
+        conn = cls.get_connection()
         cur = conn.cursor()
-        cur.execute(query,(startdate,enddate))
+        cur.execute(query, (startdate, enddate))
         rows = cur.fetchall()
         conn.close()
         return rows
 
-
     @staticmethod
-    def save_data(data: dict, created_by:str) -> None:
-        id: int = DataBase().insert_record(
+    def save_data(data: dict, created_by: str) -> None:
+        # مکانیزم ذخیره فاکتور و کپی همزمان عکس‌ها
+        record_id: str = DataBase.insert_record(
             Invoice_NO=data["Invoice NO"],
             Project_Code=data["Project_Code"],
             explanation=data["explanation"],
@@ -131,14 +188,14 @@ class Load_Save_Data:
             expense_center=data["expense_center"],
             expense_type=data["expense_type"],
             company_name=data["company_name"],
-            created_by = created_by
+            created_by=created_by
         )
-        img:list[str] = Load_Save_Data().get_image_paths_by_id(id)
-        ImageStore.copy_images_into_record_folder(id, img)
+        img: list[str] = Load_Save_Data.get_image_paths_by_id(record_id)
+        ImageStore.copy_images_into_record_folder(record_id, img)
 
-
-    def get_image_paths_by_id(self, record_id: str) -> list[str]:
-        conn = self.get_connection()
+    @classmethod
+    def get_image_paths_by_id(cls, record_id: str) -> list[str]:
+        conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute("SELECT image_path FROM records WHERE id = ?", (record_id,))
         row = cur.fetchone()
@@ -147,17 +204,18 @@ class Load_Save_Data:
         raw = "" if not row or row[0] is None else str(row[0]).strip()
         return [p.strip() for p in raw.split("|") if p.strip()]
 
-
-    def invoice_exists(self, invoice_number: str) -> bool:
-        conn = self.get_connection()
+    @classmethod
+    def invoice_exists(cls, invoice_number: str) -> bool:
+        conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute("SELECT 1 FROM records WHERE Invoice_NO = ? AND deleted = 0", (invoice_number,))
         exists = cur.fetchone() is not None
         conn.close()
         return exists
 
-    def project_exists(self, project_code: str) -> bool:
-        conn = self.get_connection()
+    @classmethod
+    def project_exists(cls, project_code: str) -> bool:
+        conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute("SELECT 1 FROM records WHERE Project_Code = ?", (project_code,))
         exists = cur.fetchone() is not None
@@ -166,13 +224,14 @@ class Load_Save_Data:
 
     @classmethod
     def soft_delete_record(cls, record_id: str) -> None:
+        # ۱. تغییر وضعیت در دیتابیس
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute("UPDATE records SET deleted = 1 WHERE id = ?", (record_id,))
         conn.commit()
         conn.close()
 
-
+        ImageStore.delete_folder(record_id)
 
     @classmethod
     def update_record(cls, record_id: str, updated_data: dict) -> None:
@@ -207,9 +266,9 @@ class Load_Save_Data:
                     ))
         conn.commit()
         conn.close()
-        img: list[str] = Load_Save_Data().get_image_paths_by_id(record_id)
-        ImageStore.copy_images_into_record_folder(record_id, img)
 
+        img: list[str] = cls.get_image_paths_by_id(record_id)
+        ImageStore.copy_images_into_record_folder(record_id, img)
 
 
 class UserSession:
@@ -218,37 +277,56 @@ class UserSession:
     role = ""
 
 
-
 class DataBase:
-    if getattr(sys, 'frozen', False):
-        BASE_DIR = Path(sys.executable).parent
-    else:
-        BASE_DIR = Path(__file__).parent
-
-    DB_PATH = BASE_DIR / "app.db"
-
     @classmethod
     def get_connection(cls) -> sqlite3.Connection:
-        return sqlite3.connect(cls.DB_PATH)
+        return sqlite3.connect(DB_PATH)
 
     @classmethod
     def create_tables(cls) -> None:
         query = """
-                CREATE TABLE IF NOT EXISTS records (
-                    id TEXT PRIMARY KEY,
-                    Invoice_NO TEXT NOT NULL,
-                    Project_Code TEXT NOT NULL,
-                    explanation TEXT,
-                    amount REAL,
-                    record_date TEXT, 
-                    image_path TEXT,
-                    last_modified TEXT NOT NULL,
-                    source_pc TEXT NOT NULL,
-                    deleted INTEGER DEFAULT 0,
-                    expense_center TEXT,
-                    expense_type TEXT,
-                    company_name TEXT,
-                    created_by TEXT
+                CREATE TABLE IF NOT EXISTS records \
+                ( \
+                    id \
+                    TEXT \
+                    PRIMARY \
+                    KEY, \
+                    Invoice_NO \
+                    TEXT \
+                    NOT \
+                    NULL, \
+                    Project_Code \
+                    TEXT \
+                    NOT \
+                    NULL, \
+                    explanation \
+                    TEXT, \
+                    amount \
+                    REAL, \
+                    record_date \
+                    TEXT, \
+                    image_path \
+                    TEXT, \
+                    last_modified \
+                    TEXT \
+                    NOT \
+                    NULL, \
+                    source_pc \
+                    TEXT \
+                    NOT \
+                    NULL, \
+                    deleted \
+                    INTEGER \
+                    DEFAULT \
+                    0, \
+                    expense_center \
+                    TEXT, \
+                    expense_type \
+                    TEXT, \
+                    company_name \
+                    TEXT, \
+                    created_by \
+                    TEXT
                 )
                 """
         conn = cls.get_connection()
@@ -260,14 +338,34 @@ class DataBase:
             pass  # column already exists
         conn.commit()
 
-        # Create users table (if not exists)
         cur.execute(
             '''CREATE TABLE IF NOT EXISTS users
-                (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                hashed_password TEXT NOT NULL,
-                role TEXT NOT NULL CHECK (role IN ('admin','user')),
+            (
+                id
+                INTEGER
+                PRIMARY
+                KEY
+                AUTOINCREMENT,
+                username
+                TEXT
+                UNIQUE
+                NOT
+                NULL,
+                hashed_password
+                TEXT
+                NOT
+                NULL,
+                role
+                TEXT
+                NOT
+                NULL
+                CHECK (
+                role
+                IN
+               (
+                'admin',
+                'user'
+               )),
                 full_name TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
@@ -275,8 +373,6 @@ class DataBase:
         )
         conn.commit()
         conn.close()
-
-    # ========== USER AUTHENTICATION METHODS ==========
 
     @classmethod
     def create_default_users(cls) -> None:
@@ -308,11 +404,6 @@ class DataBase:
 
     @classmethod
     def verify_login(cls, username: str, password: str) -> tuple[bool, str]:
-        """
-        Returns (success, role)
-        success: True if password matches, else False
-        role: 'admin' or 'user' (empty string if login fails)
-        """
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute('SELECT hashed_password, role FROM users WHERE username = ?', (username,))
@@ -320,8 +411,8 @@ class DataBase:
         conn.close()
 
         UserSession.username = username
-        UserSession.full_name = DataBase.get_user_full_name(username)
-        UserSession.role = DataBase.get_user_role(username)
+        UserSession.full_name = cls.get_user_full_name(username)
+        UserSession.role = cls.get_user_role(username)
 
         if row and bcrypt.checkpw(password.encode(), row[0]):
             return True, row[1]
@@ -329,14 +420,12 @@ class DataBase:
 
     @classmethod
     def get_user_role(cls, username: str) -> str:
-        """Return role ('admin' / 'user') or empty string if user not found."""
         conn = cls.get_connection()
         cur = conn.cursor()
         cur.execute('SELECT role FROM users WHERE username = ?', (username,))
         row = cur.fetchone()
         conn.close()
         return row[0] if row else ""
-
 
     @classmethod
     def get_user_full_name(cls, username: str) -> str:
@@ -347,12 +436,11 @@ class DataBase:
         conn.close()
         return row[0] if row and row[0] else username
 
-
     @classmethod
-    def insert_record(self, Invoice_NO, Project_Code, explanation, amount, record_date,
+    def insert_record(cls, Invoice_NO, Project_Code, explanation, amount, record_date,
                       image_path, source_pc, expense_center, expense_type,
-                      company_name, created_by) -> str:  # new parameter
-        conn = self.get_connection()
+                      company_name, created_by) -> str:
+        conn = cls.get_connection()
         cur = conn.cursor()
         record_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
@@ -364,28 +452,33 @@ class DataBase:
                     """, (record_id, Invoice_NO, Project_Code, explanation, amount, record_date, image_path,
                           now, source_pc, expense_center, expense_type, company_name, created_by))
         conn.commit()
+        conn.close()
         return record_id
 
 
-
-
-from pathlib import Path
-import shutil
-
 class ImageStore:
-    BASE_DIR = Path(r"./image_records")
-    BASE_DIR.mkdir(parents=True, exist_ok=True)
+    BASE_DIR = IMAGE_DIR
 
-    #Making new folder
     @classmethod
     def create_folder(cls, record_id: str) -> Path:
         folder = cls.BASE_DIR / str(record_id)
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
-    #Copying images in that folder
+    @classmethod
+    def delete_folder(cls, record_id: str) -> None:
+        folder = cls.BASE_DIR / str(record_id)
+        if folder.exists() and folder.is_dir():
+            shutil.rmtree(folder)
+
     @classmethod
     def copy_images_into_record_folder(cls, record_id: str, original_paths: list[str]) -> list[str]:
+        if original_paths:
+            cls.delete_folder(record_id)
+
+        if not original_paths:
+            return []
+
         folder = cls.create_folder(record_id)
         copied_paths: list[str] = []
 
