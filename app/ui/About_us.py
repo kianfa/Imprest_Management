@@ -4,7 +4,6 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QDesktopServices, QFont
-from app.main import main
 
 STYLE = """
 QDialog {

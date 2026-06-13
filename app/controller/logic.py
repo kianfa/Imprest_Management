@@ -38,9 +38,12 @@ from PyQt6.QtCore import (
     QMarginsF,
     QEventLoop
 )
+import sys
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
+if getattr(sys, 'frozen', False):
+    BASE_DIR = Path(sys.executable).parent
+else:
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 PathLike = Union[str, Path]
 
@@ -366,185 +369,107 @@ class exporting:
         super().__init__()
 
     def export_table_to_pdf(self, table, file_path):
-        # Create hidden export view
+        if getattr(sys, 'frozen', False):
+            base = Path(sys.executable).parent
+        else:
+            base = Path(__file__).resolve().parent.parent.parent
+
         export_view = QTableView()
-        model = table.model()
-
-        # Reuse SAME model
         export_view.setModel(table.model())
-
-        # Copy appearance
         export_view.setFont(table.font())
         export_view.setStyleSheet(table.styleSheet())
 
-        # copy column widths
         for col in range(table.model().columnCount()):
-            export_view.setColumnWidth(
-                col,
-                table.columnWidth(col)
-            )
+            export_view.setColumnWidth(col, table.columnWidth(col))
 
-        # Printer
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
-
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-
         printer.setOutputFileName(file_path)
-
-        printer.setPageSize(
-            QPageSize(QPageSize.PageSizeId.A4)
-        )
-
-        printer.setPageOrientation(
-            QPageLayout.Orientation.Landscape
-        )
-
-        printer.setPageMargins(
-            QMarginsF(10, 10, 10, 10)
-        )
-
-        #
-        # Painter
-        #
+        printer.setPageSize(QPageSize(QPageSize.PageSizeId.A4))
+        printer.setPageOrientation(QPageLayout.Orientation.Landscape)
+        printer.setPageMargins(QMarginsF(10, 10, 10, 10))
 
         painter = QPainter()
-
         if not painter.begin(printer):
-            raise RuntimeError("Could not create printer")
+            raise RuntimeError("Could not begin painter")
 
-        # Resize export view
-        export_view.resizeColumnsToContents()
-        export_view.resizeRowsToContents()
-
-        export_view.setFixedHeight(
-            export_view.horizontalHeader().height()
-            + export_view.verticalHeader().length()
-            + 4
-        )
-
-        export_view.setFixedWidth(
-            export_view.verticalHeader().width()
-            + export_view.horizontalHeader().length()
-            + 4
-        )
-
-        QApplication.processEvents(
-            QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents
-        )
-
-        export_view.setColumnHidden(0, True)
-
-        # PAGE 1 → FULL TABLE
-        painter.save()
-
-        scale = 13
-
-        painter.scale(scale, scale)
-
-        export_view.render(painter)
-
-        painter.restore()
-
-        printer.newPage()
-
-        # NEXT PAGES → ONE ROW EACH
-        row_count = table.model().rowCount()
-
-        for row in range(1, row_count):
-
-            # Hide all rows
-            export_view.setUpdatesEnabled(False)
-
-            for r in range(row_count):
-                export_view.setRowHidden(r, True)
-
-            # Show rows needed
-            export_view.setRowHidden(0, False)
-            export_view.setColumnHidden(0, True)
-            export_view.setRowHidden(row, False)
-
-            export_view.setUpdatesEnabled(True)
-
-            # Tight resize
+        try:
+            export_view.resizeColumnsToContents()
+            export_view.resizeRowsToContents()
             export_view.setFixedHeight(
                 export_view.horizontalHeader().height()
-                + export_view.rowHeight(0)
-                + export_view.rowHeight(row)
-                + 10
+                + export_view.verticalHeader().length() + 4
             )
-
-            # Process events
-            QApplication.processEvents(
-                QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents
+            export_view.setFixedWidth(
+                export_view.verticalHeader().width()
+                + export_view.horizontalHeader().length() + 4
             )
+            QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
+            export_view.setColumnHidden(0, True)
 
-            # image
-            index = model.index(row, 0)
-
-            id = str(model.data(index)).strip()
-            images_path = BASE_DIR / "image_records" / id
-
-            image_files=[]
-            for file in os.listdir(images_path):
-                if file.lower().endswith((
-                        ".png",
-                        ".jpg",
-                        ".jpeg",
-                        ".bmp",
-                        ".webp"
-                )):
-                    image_files.append(file)
-
-            # render table
+            scale = 13
             painter.save()
-
             painter.scale(scale, scale)
-
             export_view.render(painter)
-
             painter.restore()
 
-            # Start images BELOW scaled table
-            table_height = export_view.height() * scale
+            row_count = table.model().rowCount()
+            model = table.model()
 
-            x = 500
-            y = table_height
-
-            page_rect = printer.pageRect(
-                QPrinter.Unit.DevicePixel
-            )
-
-            page_height = page_rect.height()
-
-            for file in image_files:
-                full_path = images_path / file
-
-                image = QImage(str(full_path))
-
-                scaled = image.scaled(
-                    7000,
-                    7000,
-                    Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation
-                )
-
-                if y + scaled.height() > page_height:
-                    printer.newPage()
-
-                    y = 500
-
-                painter.drawImage(x, y, scaled)
-
-                y += scaled.height() + 40
-
-            # Next page
-            if row < row_count - 1:
+            for row in range(1, row_count):
                 printer.newPage()
 
-        # Finish
-        painter.end()
+                export_view.setUpdatesEnabled(False)
+                for r in range(row_count):
+                    export_view.setRowHidden(r, True)
+                export_view.setRowHidden(0, False)
+                export_view.setColumnHidden(0, True)
+                export_view.setRowHidden(row, False)
+                export_view.setUpdatesEnabled(True)
 
-        export_view.deleteLater()
+                export_view.setFixedHeight(
+                    export_view.horizontalHeader().height()
+                    + export_view.rowHeight(0)
+                    + export_view.rowHeight(row) + 10
+                )
+                QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
+
+                id = str(model.data(model.index(row, 0))).strip()
+                images_path = base / "image_records" / id
+
+                image_files = []
+                if images_path.exists() and images_path.is_dir():
+                    image_files = [
+                        f for f in os.listdir(images_path)
+                        if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".webp"))
+                    ]
+
+                painter.save()
+                painter.scale(scale, scale)
+                export_view.render(painter)
+                painter.restore()
+
+                table_height = export_view.height() * scale
+                x, y = 500, table_height
+                page_height = printer.pageRect(QPrinter.Unit.DevicePixel).height()
+
+                for file in image_files:
+                    image = QImage(str(images_path / file))
+                    scaled = image.scaled(
+                        7000, 7000,
+                        Qt.AspectRatioMode.KeepAspectRatio,
+                        Qt.TransformationMode.SmoothTransformation
+                    )
+                    if y + scaled.height() > page_height:
+                        printer.newPage()
+                        y = 500
+                    painter.drawImage(x, y, scaled)
+                    y += scaled.height() + 40
+
+        finally:
+            painter.end()
+            export_view.deleteLater()
+
 
     def export_tableview_to_excel(self, view) -> None:
         model = view.model()

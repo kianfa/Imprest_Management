@@ -9,9 +9,10 @@ class Navigator:
     def main_window_navigator_about_us(self, current_window) -> None:
         from app.ui.About_us import AboutDialog
 
-        self.about_us = AboutDialog(previous_window=current_window)
-        self.about_us.show()
+        dialog = AboutDialog(previous_window=current_window)
         current_window.hide()
+        dialog.exec()
+        current_window.show()
 
     def dashboard_page_navigator_expense_entry(self, current_window) -> None:
         from app.ui.Receipt_Entry_Page_UI import Expense_Receipt_Entry

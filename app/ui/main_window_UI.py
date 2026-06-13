@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
 from pathlib import Path
 from app.controller.logic import main_window_logic
-from PyQt6.QtCore import Qt
 from app.controller.navigator import Navigator
 import sys
 
@@ -56,4 +55,9 @@ class MainWindow(QDialog):
             QMessageBox.critical(None, "Warning", result.error_message)
 
     def open_about_page(self, link):
-        self.nav.main_window_navigator_about_us(self)
+        try:
+            self.nav.main_window_navigator_about_us(self)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print(f"CRASH: {e}")
