@@ -382,7 +382,7 @@ class exporting:
         for col in range(table.model().columnCount()):
             export_view.setColumnWidth(col, table.columnWidth(col))
 
-        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+        printer = QPrinter(QPrinter.PrinterMode.ScreenResolution)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setOutputFileName(file_path)
         printer.setPageSize(QPageSize(QPageSize.PageSizeId.A4))
@@ -392,6 +392,14 @@ class exporting:
         painter = QPainter()
         if not painter.begin(printer):
             raise RuntimeError("Could not begin painter")
+
+        page_rect = printer.pageRect(QPrinter.Unit.DevicePixel)
+        page_count = 1
+        painter.drawText(
+            int(page_rect.width() - 5),  # x: from left
+            int(page_rect.height() - 1),  # y: from top
+            str(page_count)
+        )
 
         try:
             export_view.resizeColumnsToContents()
@@ -407,7 +415,7 @@ class exporting:
             QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
             export_view.setColumnHidden(0, True)
 
-            scale = 13
+            scale = 1.35
             painter.save()
             painter.scale(scale, scale)
             export_view.render(painter)
@@ -418,6 +426,12 @@ class exporting:
 
             for row in range(1, row_count):
                 printer.newPage()
+                page_count+=1
+                painter.drawText(
+                    int(page_rect.width() - 5),  # x: from left
+                    int(page_rect.height() - 1),  # y: from top
+                    str(page_count)
+                )
 
                 export_view.setUpdatesEnabled(False)
                 for r in range(row_count):
@@ -450,21 +464,34 @@ class exporting:
                 painter.restore()
 
                 table_height = export_view.height() * scale
-                x, y = 500, table_height
+                x, y = 50, int(table_height)
                 page_height = printer.pageRect(QPrinter.Unit.DevicePixel).height()
 
                 for file in image_files:
                     image = QImage(str(images_path / file))
                     scaled = image.scaled(
-                        7000, 7000,
+                        700, 700,
                         Qt.AspectRatioMode.KeepAspectRatio,
                         Qt.TransformationMode.SmoothTransformation
                     )
                     if y + scaled.height() > page_height:
                         printer.newPage()
-                        y = 500
+                        page_count+=1
+                        painter.drawText(
+                            int(page_rect.width() - 5),  # x: from left
+                            int(page_rect.height() - 10), # y: from top
+                            str(page_count)
+                        )
+                        painter.save()
+                        painter.scale(scale, scale)
+                        export_view.render(painter)  # export_view still has this row visible
+                        painter.restore()
+
+                        table_height = export_view.height() * scale
+                        y = int(table_height) + 5
+
                     painter.drawImage(x, y, scaled)
-                    y += scaled.height() + 40
+                    y += scaled.height() + 4
 
         finally:
             painter.end()
