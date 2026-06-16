@@ -363,6 +363,13 @@ QHeaderView::section {
       </widget>
      </item>
      <item>
+      <widget class="QLineEdit" name="leCompanyName">
+       <property name="placeholderText">
+        <string>Filter by Company Name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnSearch">
        <property name="text">
         <string>Search</string>

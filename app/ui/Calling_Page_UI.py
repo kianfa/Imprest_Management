@@ -37,7 +37,6 @@ class Calling_Page(QWidget):
         self.model.setHorizontalHeaderLabels(self.headers)
 
         self.UI.tableView.setModel(self.model)
-        self.UI.tableView.setModel(self.model)
         self.UI.tableView.horizontalHeader().setDefaultSectionSize(120)
         self.UI.tableView.horizontalHeader().setVisible(False)
         self.UI.tableView.verticalHeader().setVisible(False)  # removes row numbers + corner block
@@ -93,6 +92,7 @@ class Calling_Page(QWidget):
         self.UI.btnCancel.clicked.connect(self.open_dashboard)
         self.UI.btnSaveasPDF.clicked.connect(self.on_save_pdf_clicked)
         self.UI.btnSaveasexcel.clicked.connect(self.on_save_excel_clicked)
+        self.UI.leCompanyName.textChanged.connect(self.filtering_by_company_name)
 
     def change_page(self, index) -> None:
         if self.sender().isChecked():
@@ -124,3 +124,6 @@ class Calling_Page(QWidget):
                                  self.UI.rbProjectCode,self.UI.leProjectCode,
                                  self.UI.rbTimeRange,self.UI.leStartDate, self.UI.leEndDate,
                                  self.UI.rbRegistrationDate, self.UI.leRegistrationDate, self.UI.leExplanation)
+
+    def filtering_by_company_name(self, text: str) -> None:
+        self.logic.filtering(self.UI.tableView, text)

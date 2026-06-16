@@ -1,44 +1,25 @@
 from __future__ import annotations
-from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
+
+import traceback
+
 from openpyxl.utils import get_column_letter
-import os
 from dataclasses import dataclass
 import shutil
 from app.data.data_base import Load_Save_Data,UserSession
-from PyQt6.QtGui import QStandardItem, QImage
-from PyQt6.QtWidgets import (
-    QFileDialog, QRadioButton, QDateEdit, QLineEdit, QTableView
-)
+from PyQt6.QtGui import QStandardItem, QImage, QAction, QIcon, QPainter, QPageLayout, QPageSize
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 from typing import Optional, Union
 from pathlib import Path
 from PyQt6.QtWidgets import (
-    QWidget, QMessageBox, QComboBox, QInputDialog, QMenu
+    QWidget, QMessageBox, QComboBox, QInputDialog, QMenu, QApplication, QTableView, QFileDialog, QRadioButton, QLineEdit
 )
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtGui import QAction, QIcon
 from app.ui.edit_record_dialog import EditRecordDialog
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QApplication,
-    QTableView
-)
-
+from PyQt6.QtCore import Qt, QSortFilterProxyModel, QSettings, QMarginsF, QEventLoop
 from PyQt6.QtPrintSupport import QPrinter
-
-from PyQt6.QtGui import (
-    QPainter,
-    QPageLayout,
-    QPageSize
-)
-
-from PyQt6.QtCore import (
-    QMarginsF,
-    QEventLoop
-)
 import sys
+import os
+
 
 if getattr(sys, 'frozen', False):
     BASE_DIR = Path(sys.executable).parent
@@ -361,7 +342,16 @@ class calling_page_logic:
             Load_Save_Data.soft_delete_record(record_id)
             QMessageBox.information(None, "Deleted", "Record has been deleted.")
 
+    def filtering(self, table: QTableView, text: str) -> None:
+        if not hasattr(self, 'proxy'):
+            self.proxy = QSortFilterProxyModel()
+            self.proxy.setSourceModel(table.model())
+            self.proxy.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            self.proxy.setFilterKeyColumn(8)
+            self.proxy.filterAcceptsRow = lambda row, parent: True if row == 0 else QSortFilterProxyModel.filterAcceptsRow(self.proxy, row, parent)
+            table.setModel(self.proxy)
 
+        self.proxy.setFilterFixedString(text)
 
 
 class exporting:
