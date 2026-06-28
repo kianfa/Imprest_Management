@@ -214,3 +214,15 @@ __marimo__/
 app/data/image/
 app/storage/
 uploads/
+
+# Project specific
+output/
+image_records/
+
+# Junk files accidentally committed
+bool
+*.jpg
+*.jpeg
+*.png
+
+app/controller/license.py
