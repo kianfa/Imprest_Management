@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QDate
+from PyQt6.QtCore import QDate, Qt
 from PyQt6.uic import loadUi
 from pathlib import Path
 from app.controller.logic import calling_page_logic, exporting
@@ -38,9 +38,12 @@ class Calling_Page(QWidget):
 
         self.UI.tableView.setModel(self.model)
         self.UI.tableView.horizontalHeader().setDefaultSectionSize(120)
-        self.UI.tableView.horizontalHeader().setVisible(False)
+        self.UI.tableView.horizontalHeader().setVisible(True)
         self.UI.tableView.verticalHeader().setVisible(False)  # removes row numbers + corner block
         self.UI.tableView.setCornerButtonEnabled(False)  # extra safety
+        self.UI.tableView.setColumnHidden(0, True)
+        self.UI.tableView.setSortingEnabled(True)
+        self.UI.tableView.sortByColumn(3, Qt.SortOrder.AscendingOrder)
         self.UI.stackedWidget.setCurrentIndex(3)
         self.UI.setWindowTitle("Calling_Page")
 

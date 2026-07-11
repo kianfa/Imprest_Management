@@ -253,18 +253,9 @@ class calling_page_logic:
         else:  # rbExplanation
             rows = Load_Save_Data.get_invoices_by_explanation(lee.text().strip())
 
-        # Clear + keep the static first row
         self.model.clear()
         self.model.setColumnCount(len(self.headers))
-        self.model.setHorizontalHeaderLabels([""] * len(self.headers))
-
-        # Header row (first row in the model)
-        header_items = []
-        for h in self.headers:
-            item = QStandardItem(h)
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            header_items.append(item)
-        self.model.appendRow(header_items)
+        self.model.setHorizontalHeaderLabels(self.headers)  # real header, real labels
 
         # Data rows
         for row in rows:
@@ -278,9 +269,10 @@ class calling_page_logic:
                 items.append(item)
             self.model.appendRow(items)
 
-        # Hide id column (column 0)
         self.tableView.setColumnHidden(0, True)
-
+        # Default sort by record_date
+        date_col_index = self.headers.index("record_date")
+        self.tableView.sortByColumn(date_col_index, Qt.SortOrder.AscendingOrder)
 
     def edit_record(self, table: QTableView) -> None:
         rows = table.selectionModel().selectedRows()

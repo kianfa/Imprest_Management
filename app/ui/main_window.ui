@@ -209,7 +209,7 @@ QFrame#divider {
       <item>
        <widget class="QLabel" name="lblBrand">
         <property name="text">
-         <string>YourApp</string>
+         <string>Imprest Management</string>
         </property>
        </widget>
       </item>

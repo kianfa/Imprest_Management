@@ -176,7 +176,6 @@ class Load_Save_Data:
 
     @staticmethod
     def save_data(data: dict, created_by: str) -> None:
-        # مکانیزم ذخیره فاکتور و کپی همزمان عکس‌ها
         record_id: str = DataBase.insert_record(
             Invoice_NO=data["Invoice NO"],
             Project_Code=data["Project_Code"],
