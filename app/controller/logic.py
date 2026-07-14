@@ -404,11 +404,28 @@ class exporting:
             export_view.render(painter)
             painter.restore()
 
+
+            printer.newPage()
+
             row_count = table.model().rowCount()
             model = table.model()
 
-            for row in range(0, row_count):
+            # --- Picture container settings ---
+            # Images are shown 2 per page, side by side. Each image is scaled to
+            # fit INSIDE a fixed container (both width and height capped) and
+            # centered within it, so unusual aspect ratios never overflow the
+            # page or bleed into the other image's space.
+            IMAGES_PER_PAGE = 2
+            MARGIN = 20
+            IMG_SPACING = 15
 
+            page_w = int(page_rect.width())
+            page_rect_h = int(page_rect.height())
+
+            # Container width: two containers + one spacing gap must fit between margins
+            CONTAINER_W = (page_w - 2 * MARGIN - IMG_SPACING) // IMAGES_PER_PAGE
+
+            for row in range(row_count):
                 export_view.setUpdatesEnabled(False)
                 for r in range(row_count):
                     export_view.setRowHidden(r, True)
@@ -424,8 +441,8 @@ class exporting:
                 )
                 QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
 
-                id = str(model.data(model.index(row, 0))).strip()
-                images_path = base / "image_records" / id
+                row_id = str(model.data(model.index(row, 0))).strip()
+                images_path = base / "image_records" / row_id
 
                 image_files = []
                 if images_path.exists() and images_path.is_dir():
@@ -434,40 +451,67 @@ class exporting:
                         if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".webp"))
                     ]
 
+                # Start every row on its own fresh page (except the very first row,
+                # which uses the page already started before the loop).
+                if row > 0:
+                    printer.newPage()
+                    page_count += 1
+                    painter.drawText(
+                        int(page_rect.width() - 5),
+                        int(page_rect.height() - 10),
+                        str(page_count)
+                    )
+
+                painter.save()
+                painter.scale(scale, scale)
+                export_view.render(painter)  # draw this row's mini-table
+                painter.restore()
 
                 table_height = export_view.height() * scale
-                x, y = 50, int(table_height)
-                page_height = printer.pageRect(QPrinter.Unit.DevicePixel).height()
+                top_y = int(table_height) + MARGIN
 
-                image_counter = 0
-                for file in image_files:
+                # Container height: fill remaining vertical space below the table
+                CONTAINER_H = page_rect_h - top_y - MARGIN
+
+                slot_in_page = 0  # 0 or 1 -> left or right slot on the current page
+                y = top_y
+
+                for i, file in enumerate(image_files):
+                    # every 2 images (IMAGES_PER_PAGE), force a new page
+                    if slot_in_page == IMAGES_PER_PAGE:
+                        printer.newPage()
+                        page_count += 1
+                        painter.drawText(
+                            int(page_rect.width() - 5),
+                            int(page_rect.height() - 10),
+                            str(page_count)
+                        )
+                        painter.save()
+                        painter.scale(scale, scale)
+                        export_view.render(painter)  # re-draw row header on new page
+                        painter.restore()
+
+                        top_y = int(table_height) + MARGIN
+                        y = top_y
+                        slot_in_page = 0
+
+                    x = MARGIN + slot_in_page * (CONTAINER_W + IMG_SPACING)
+
                     image = QImage(str(images_path / file))
+                    if image.isNull():
+                        continue
+
+                    # scale to fit INSIDE the fixed container, then center it
                     scaled = image.scaled(
-                        600, 600,
+                        CONTAINER_W, CONTAINER_H,
                         Qt.AspectRatioMode.KeepAspectRatio,
                         Qt.TransformationMode.SmoothTransformation
                     )
-                    if y + scaled.height() > page_height:
-                        printer.newPage()
-                        page_count+=1
-                        painter.drawText(
-                            int(page_rect.width() - 5),  # x: from left
-                            int(page_rect.height() - 10), # y: from top
-                            str(page_count)
-                        )
-                        if image_counter == 0:
-                            painter.save()
-                            painter.scale(scale, scale)
-                            export_view.render(painter)  # export_view still has this row visible
-                            painter.restore()
-                        image_counter += 1
+                    offset_x = (CONTAINER_W - scaled.width()) // 2
+                    offset_y = (CONTAINER_H - scaled.height()) // 2
 
-                        table_height = export_view.height() * scale
-                        y = int(table_height) + 5
-
-                    painter.drawImage(x, y, scaled)
-                    y += scaled.height() + 4
-
+                    painter.drawImage(x + offset_x, y + offset_y, scaled)
+                    slot_in_page += 1
         finally:
             painter.end()
             export_view.deleteLater()
