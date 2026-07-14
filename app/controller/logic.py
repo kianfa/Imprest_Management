@@ -385,6 +385,7 @@ class exporting:
 
         try:
             export_view.resizeColumnsToContents()
+            export_view.setColumnHidden(9, True)
             export_view.resizeRowsToContents()
             export_view.setFixedHeight(
                 export_view.horizontalHeader().height()
@@ -397,7 +398,7 @@ class exporting:
             QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
             export_view.setColumnHidden(0, True)
 
-            scale = 1.35
+            scale = 1.38
             painter.save()
             painter.scale(scale, scale)
             export_view.render(painter)
@@ -406,20 +407,13 @@ class exporting:
             row_count = table.model().rowCount()
             model = table.model()
 
-            for row in range(1, row_count):
-                printer.newPage()
-                page_count+=1
-                painter.drawText(
-                    int(page_rect.width() - 5),  # x: from left
-                    int(page_rect.height() - 1),  # y: from top
-                    str(page_count)
-                )
+            for row in range(0, row_count):
 
                 export_view.setUpdatesEnabled(False)
                 for r in range(row_count):
                     export_view.setRowHidden(r, True)
-                export_view.setRowHidden(0, False)
                 export_view.setColumnHidden(0, True)
+                export_view.setColumnHidden(9, True)
                 export_view.setRowHidden(row, False)
                 export_view.setUpdatesEnabled(True)
 
@@ -440,19 +434,16 @@ class exporting:
                         if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".webp"))
                     ]
 
-                painter.save()
-                painter.scale(scale, scale)
-                export_view.render(painter)
-                painter.restore()
 
                 table_height = export_view.height() * scale
                 x, y = 50, int(table_height)
                 page_height = printer.pageRect(QPrinter.Unit.DevicePixel).height()
 
+                image_counter = 0
                 for file in image_files:
                     image = QImage(str(images_path / file))
                     scaled = image.scaled(
-                        700, 700,
+                        600, 600,
                         Qt.AspectRatioMode.KeepAspectRatio,
                         Qt.TransformationMode.SmoothTransformation
                     )
@@ -464,10 +455,12 @@ class exporting:
                             int(page_rect.height() - 10), # y: from top
                             str(page_count)
                         )
-                        painter.save()
-                        painter.scale(scale, scale)
-                        export_view.render(painter)  # export_view still has this row visible
-                        painter.restore()
+                        if image_counter == 0:
+                            painter.save()
+                            painter.scale(scale, scale)
+                            export_view.render(painter)  # export_view still has this row visible
+                            painter.restore()
+                        image_counter += 1
 
                         table_height = export_view.height() * scale
                         y = int(table_height) + 5
@@ -478,7 +471,6 @@ class exporting:
         finally:
             painter.end()
             export_view.deleteLater()
-
 
     def export_tableview_to_excel(self, view) -> None:
         model = view.model()
@@ -513,72 +505,38 @@ class exporting:
         # HEADER ROW (ROW 1)
         # ==================================================
 
-        # Numbering column header
         cell = ws.cell(row=1, column=1, value="No.")
         cell.font = header_font
         cell.alignment = header_align
 
-        # Table headers
         for excel_col, logical_col in enumerate(export_col, start=2):
             title = model.headerData(
                 logical_col,
                 Qt.Orientation.Horizontal,
                 Qt.ItemDataRole.DisplayRole
             )
-
             text = "" if title is None else str(title)
-
-            cell = ws.cell(
-                row=1,
-                column=excel_col,
-                value=text
-            )
+            cell = ws.cell(row=1, column=excel_col, value=text)
             cell.font = header_font
             cell.alignment = header_align
 
         ws.freeze_panes = "A2"
 
         # ==================================================
-        # DATA ROWS (START FROM ROW 2)
+        # DATA ROWS (STARTING ROW 2)
         # ==================================================
 
-        rows = model.rowCount()
+        row_count = model.rowCount()
 
-        for r in range(rows):
-            excel_row = r + 1
+        for row_idx, source_row in enumerate(range(row_count), start=2):
+            # "No." column
+            ws.cell(row=row_idx, column=1, value=row_idx - 1)
 
-            # Row number
-            ws.cell(
-                row=excel_row + 1,
-                column=1,
-                value=r + 1
-            )
-
-            # Data columns
+            # Real data columns
             for excel_col, logical_col in enumerate(export_col, start=2):
-                idx = model.index(r, logical_col)
-
-                value = model.data(
-                    idx,
-                    Qt.ItemDataRole.DisplayRole
-                )
-
-                if value is None:
-                    state = model.data(
-                        idx,
-                        Qt.CheckStateRole
-                    )
-
-                    if state is not None:
-                        value = "✓" if state == Qt.Checked else "✗"
-                    else:
-                        value = ""
-
-                ws.cell(
-                    row=excel_row,
-                    column=excel_col,
-                    value=str(value)
-                )
+                index = model.index(source_row, logical_col)
+                value = model.data(index, Qt.ItemDataRole.DisplayRole)
+                ws.cell(row=row_idx, column=excel_col, value=value)
 
         # ==================================================
         # AUTO WIDTH

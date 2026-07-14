@@ -32,7 +32,7 @@ class Expense_Receipt_Entry(QWidget):
 
         # Enhance the three combo boxes (no UI changes needed)
         self.logic.enhance_combo(self.UI.cbProjectCode,
-                                 settings_key="expense_center_items")
+                                 settings_key="project_code_items")
         self.logic.enhance_combo(self.UI.cbExpenseCenter,
                       settings_key="expense_center_items")
         self.logic.enhance_combo(self.UI.cbExpenseType,
