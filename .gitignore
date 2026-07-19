@@ -214,3 +214,6 @@ __marimo__/
 app/data/image/
 app/storage/
 uploads/
+
+/output
+/image_records
