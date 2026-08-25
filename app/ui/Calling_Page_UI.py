@@ -1,11 +1,11 @@
-from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUi
 from pathlib import Path
 from app.controller.logic import calling_page_logic, exporting
 from app.data.data_base import Load_Save_Data, UserSession
 from app.controller.navigator import Navigator
 from PyQt6.QtGui import QStandardItemModel
-from PyQt6.QtWidgets import QWidget, QFileDialog, QMessageBox
+from PyQt6.QtWidgets import QWidget, QFileDialog, QMessageBox, QApplication
 from PyQt6.QtWidgets import QAbstractItemView
 import sys
 from app.ui.Solar_Date import JalaliDateEdit
@@ -46,6 +46,7 @@ class Calling_Page(QWidget):
         self.UI.tableView.sortByColumn(3, Qt.SortOrder.AscendingOrder)
         self.UI.stackedWidget.setCurrentIndex(3)
         self.UI.setWindowTitle("Calling_Page")
+        self.center_on_screen()
 
         self.logic = calling_page_logic()
         self.export = exporting()
@@ -96,6 +97,13 @@ class Calling_Page(QWidget):
         self.UI.btnSaveasPDF.clicked.connect(self.on_save_pdf_clicked)
         self.UI.btnSaveasexcel.clicked.connect(self.on_save_excel_clicked)
         self.UI.leCompanyName.textChanged.connect(self.filtering_by_company_name)
+
+    def center_on_screen(self) -> None:
+        screen = QApplication.primaryScreen().availableGeometry()
+        frame = self.frameGeometry()
+        frame.moveCenter(screen.center())
+        frame.moveTop(frame.top() - 15)
+        self.move(frame.topLeft())
 
     def change_page(self, index) -> None:
         if self.sender().isChecked():

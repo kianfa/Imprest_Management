@@ -227,3 +227,5 @@ bool
 *.pdf
 
 app/controller/license.py
+
+setup_users.py
