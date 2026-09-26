@@ -229,3 +229,6 @@ bool
 app/controller/license.py
 
 setup_users.py
+
+/output
+/image_records 
