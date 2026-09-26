@@ -454,9 +454,13 @@ class DataBase:
 
 
 # ============================================================================
+from PIL import Image
+import pillow_heif
+pillow_heif.register_heif_opener()
 
 class ImageStore:
     BASE_DIR = IMAGE_DIR
+    BASE_DIR.mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def create_folder(cls, record_id: str) -> Path:
@@ -472,12 +476,6 @@ class ImageStore:
 
     @classmethod
     def copy_images_into_record_folder(cls, record_id: str, original_paths: list[str]) -> list[str]:
-        if original_paths:
-            cls.delete_folder(record_id)
-
-        if not original_paths:
-            return []
-
         folder = cls.create_folder(record_id)
         copied_paths: list[str] = []
 
@@ -485,8 +483,23 @@ class ImageStore:
             src_path = Path(src)
             if not src_path.exists():
                 continue
-            dest = folder / f"{i:03d}{src_path.suffix.lower()}"
-            shutil.copy2(src_path, dest)
-            copied_paths.append(str(dest))
+
+            suffix = src_path.suffix.lower()
+
+            # If it is an iPhone HEIC/HEIF photo, convert it to standard JPEG (.jpg)
+            if suffix in [".heic", ".heif"]:
+                dest = folder / f"{i:03d}.jpg"
+                try:
+                    with Image.open(src_path) as img:
+                        # Convert color profile to RGB and save as JPG
+                        img.convert("RGB").save(dest, format="JPEG", quality=95)
+                    copied_paths.append(str(dest))
+                except Exception as e:
+                    print(f"Error converting HEIC image {src_path}: {e}")
+            else:
+                # Standard formats (.png, .jpg, .webp, .bmp) are copied as normal
+                dest = folder / f"{i:03d}{suffix}"
+                shutil.copy2(src_path, dest)
+                copied_paths.append(str(dest))
 
         return copied_paths

@@ -1,16 +1,17 @@
-from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUi
 from pathlib import Path
 from app.controller.logic import calling_page_logic, exporting
 from app.data.data_base import Load_Save_Data, UserSession
 from app.controller.navigator import Navigator
-from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtWidgets import QWidget, QFileDialog, QMessageBox, QApplication
-from PyQt6.QtWidgets import QAbstractItemView
 import sys
 from app.ui.Solar_Date import JalaliDateEdit
 from app.ui.edit_record_dialog import EditRecordDialog
-
+from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtGui import QStandardItemModel, QAction
+from PyQt6.QtWidgets import (
+    QWidget, QFileDialog, QTableView, QAbstractItemView, QMenu
+)
 
 class Calling_Page(QWidget):
     def __init__(self) -> None:
@@ -23,6 +24,18 @@ class Calling_Page(QWidget):
             ui_path = Path(__file__).parent / "Calling_Page.ui"
 
         self.UI = loadUi(str(ui_path), self)
+
+        # TODO(KF): To Nozhan: Please remove these buttons from UI.
+        self.UI.btnEditRecord.hide()
+        self.UI.btnDeleteRecord.hide()
+
+        # Enable row selection on the table view
+        self.UI.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.UI.tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+
+        # Enable Right-Click Context Menu on rows
+        self.UI.tableView.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.UI.tableView.customContextMenuRequested.connect(self.show_context_menu)
 
         self.nav = Navigator()
         self.us = UserSession()
@@ -145,3 +158,24 @@ class Calling_Page(QWidget):
 
     def filtering_by_company_name(self, text: str) -> None:
         self.logic.filtering(self.UI.tableView, text)
+
+    def show_context_menu(self, pos) -> None:
+        # Find which row was clicked
+        index = self.UI.tableView.indexAt(pos)
+        if not index.isValid():
+            return
+        # Skip row 0 because it contains the column headers
+        if index.row() == 0:
+            return
+        # Select the clicked row
+        self.UI.tableView.selectRow(index.row())
+        # Create the popup menu
+        menu = QMenu(self)
+        edit_action = QAction("✏️ Edit Record", self)
+        edit_action.triggered.connect(self.edit_record)
+        menu.addAction(edit_action)
+        delete_action = QAction("🗑️ Delete Record", self)
+        delete_action.triggered.connect(self.delete_record)
+        menu.addAction(delete_action)
+        # Show the menu at the mouse cursor position
+        menu.exec(self.UI.tableView.viewport().mapToGlobal(pos))

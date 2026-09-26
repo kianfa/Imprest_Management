@@ -149,7 +149,7 @@ class receipt_entry_logic:
             parent,
             title,
             start_dir_str,
-            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp);;All Files (*)",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.heic *.HEIC);;All Files (*)",
         )
 
         return file_paths
